@@ -12,12 +12,41 @@ services:
   #     - WATCHTOWER_LABEL_ENABLE=true
   #     - WATCHTOWER_RUN_ONCE=true
 
+# reverse proxy
+  # npm:
+  #   image: 'jc21/nginx-proxy-manager:latest'
+  #   container_name: npm
+  #   restart: unless-stopped
+  #   ports:
+  #     # These ports are in format <host-port>:<container-port>
+  #     - '80:80' # Public HTTP Port
+  #     - '443:443' # Public HTTPS Port
+  #     - '81:81' # Admin Web Port
+  #     # Add any other Stream port you want to expose
+  #     # - '21:21' # FTP
+
+  #   environment:
+  #     PUID: 1000
+  #     PGID: 1000
+  #     # Uncomment this if you want to change the location of
+  #     # the SQLite DB file within the container
+  #     # DB_SQLITE_FILE: "/data/database.sqlite"
+
+  #     # Uncomment this if IPv6 is not enabled on your host
+  #     # DISABLE_IPV6: 'true'
+
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - /docker/nginx-proxy-manager/data:/data
+  #     - /docker/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+
+# minecraft
   crafty:
     container_name: crafty-container
     image: registry.gitlab.com/crafty-controller/crafty-4:latest
     restart: always
     environment:
-        - TZ=Etc/UTC
+        - TZ=America/New_York
     ports:
         - "8443:8443" # HTTPS
         - "8123:8123" # DYNMAP
@@ -33,23 +62,69 @@ services:
     labels:
       - com.centurylinklabs.watchtower.enable=true
 
+# media
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - JELLYFIN_PublishedServerUrl=http://192.168.1.106 #optional
+    volumes:
+      - /docker/jellyfin:/config
+      - /media/drive/piracy/media/shows:/data/tvshows
+      - /media/drive/piracy/media/movies:/data/movies
+    ports:
+      - 8096:8096
+      # - 8920:8920 #optional
+      - 7359:7359/udp #optional
+      # - 1900:1900/udp #optional
+    restart: unless-stopped
+
+# piracy
+  jellyseerr:
+    image: ghcr.io/fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=America/New_York
+      - PORT=5055 #optional
+    ports:
+      - 5055:5055
+    volumes:
+      - /docker/jellyseerr:/app/config
+    restart: unless-stopped
+
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Etc/UTC
+      - TZ=America/New_York
     volumes:
       - /docker/sonarr:/config
       - /media/drive/piracy:/data
-        #- /path/to/tvseries:/tv #optional
-        #- /path/to/downloadclient-downloads:/downloads #optional
     ports:
       - 8989:8989
     restart: unless-stopped
     labels:
       - com.centurylinklabs.watchtower.enable=true
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /docker/radarr:/config
+      - /media/drive/piracy:/data
+    ports:
+      - 7878:7878
+    restart: unless-stopped
 
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
@@ -57,7 +132,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Etc/UTC
+      - TZ=America/New_York
     volumes:
       - /docker/prowlarr:/config
     ports:
@@ -66,28 +141,36 @@ services:
     labels:
       - com.centurylinklabs.watchtower.enable=true
 
-  jackett:
-    image: lscr.io/linuxserver/jackett:latest
-    container_name: jackett
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    cpus: 1
+    # networks:
+    #   - local
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Etc/UTC
-      - AUTO_UPDATE=true #optional
-        #- RUN_OPTS= #optional
+      - TZ=America/New_York
+      - WEBUI_PORT=9080
+      - TORRENTING_PORT=28469
     volumes:
-      - /docker/jackett:/config
-      - /media/drive/piracy:/downloads
+      - /docker/qbittorrent/config:/config
+      - /media/drive/piracy/downloads:/data/downloads
+      - /docker/qbittorrent/vuetorrent:/vuetorrent
     ports:
-      - 9117:9117
+      - 9080:9080
+      - 28469:28469
+      - 28469:28469/udp
     restart: unless-stopped
     labels:
       - com.centurylinklabs.watchtower.enable=true
 
+# porn
   stash:
     image: stashapp/stash:latest
     container_name: stash
     restart: unless-stopped
+    cpus: 2
     ## the container's port must be the same with the STASH_PORT in the environment section
     ports:
       - "9999:9999"
@@ -118,7 +201,7 @@ services:
     labels:
       - com.centurylinklabs.watchtower.enable=true
 
-  qbittorrent:
+  qbittorrent-porn:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent-porn
     cpus: 0.5
@@ -127,9 +210,9 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Etc/UTC
+      - TZ=America/New_York
       - WEBUI_PORT=8666
-      - TORRENTING_PORT=6881
+      - TORRENTING_PORT=65124
       # - DOCKER_MODS=ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest
     volumes:
       - /docker/qbittorrent/porn-config:/config
@@ -137,8 +220,8 @@ services:
       - /docker/qbittorrent/vuetorrent:/vuetorrent
     ports:
       - 8666:8666
-      - 6881:6881
-      - 6881:6881/udp
+      - 65124:65124
+      - 65124:65124/udp
     restart: unless-stopped
     labels:
       - com.centurylinklabs.watchtower.enable=true
