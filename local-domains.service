@@ -1,0 +1,15 @@
+[Unit]
+Description=Avahi/mDNS CNAME publisher
+After=network.target avahi-daemon.service
+
+[Service]
+User=ropc
+Type=simple
+WorkingDirectory=/home/ropc/docker-compose
+ExecStart=/home/ropc/docker-compose/local-domains-publish.sh
+Restart=no
+PrivateTmp=true
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target
