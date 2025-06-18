@@ -1,0 +1,17 @@
+# simple static server
+services:
+  static-site:
+    image: nginx:alpine-slim
+    container_name: static-site
+    restart: unless-stopped
+    ports:
+      - 8000:80
+    volumes:
+      - /docker/static-site/html:/usr/share/nginx/html:ro
+    networks:
+      - proxied-network
+
+networks:
+  proxied-network:
+    external: true
+    name: docker-compose_default

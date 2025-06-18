@@ -12,18 +12,6 @@ services:
       # - WATCHTOWER_LABEL_ENABLE=true
       # - WATCHTOWER_RUN_ONCE=true
 
-# # simple static server
-#   static-server:
-#     image: nginx
-#     container_name: static-server
-#     restart: unless-stopped
-#     ports:
-#       - 8000:80
-#     command: [nginx-debug, '-g', 'daemon off;']
-#     volumes:
-#       - /data/www:/usr/share/nginx/html:ro
-#       # - /home/ropc/docker-compose/nginx.conf:/etc/nginx/nginx.conf:ro
-
 # reverse proxy
   npm:
     image: 'jc21/nginx-proxy-manager:latest'
@@ -72,18 +60,18 @@ services:
     restart: unless-stopped
 
 # piracy
-  jellyseerr:
-    image: ghcr.io/fallenbagel/jellyseerr:latest
-    container_name: jellyseerr
-    environment:
-      - LOG_LEVEL=debug
-      - TZ=America/New_York
-      - PORT=5055 #optional
-    ports:
-      - 5055:5055
-    volumes:
-      - /docker/jellyseerr:/app/config
-    restart: unless-stopped
+#  jellyseerr:
+#    image: ghcr.io/fallenbagel/jellyseerr:latest
+#    container_name: jellyseerr
+#    environment:
+#      - LOG_LEVEL=debug
+#      - TZ=America/New_York
+#      - PORT=5055 #optional
+#    ports:
+#      - 5055:5055
+#    volumes:
+#      - /docker/jellyseerr:/app/config
+#    restart: unless-stopped
 
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
