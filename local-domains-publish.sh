@@ -13,5 +13,6 @@
 /usr/bin/avahi-publish -a sonarr.local -R 192.168.1.69 &
 /usr/bin/avahi-publish -a prowlarr.local -R 192.168.1.69 &
 /usr/bin/avahi-publish -a qbittorrent.local -R 192.168.1.69 &
+/usr/bin/avahi-publish -a homeassistant.local -R 192.168.1.69 &
 
 while true; do sleep 10000; done
