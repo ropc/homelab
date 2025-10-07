@@ -1,0 +1,423 @@
+services:
+# reverse proxy
+  npm:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: npm
+    restart: unless-stopped
+    ports:
+      # These ports are in format <host-port>:<container-port>
+      - '80:80' # Public HTTP Port
+      - '443:443' # Public HTTPS Port
+      - '81:81' # Admin Web Port
+      # Add any other Stream port you want to expose
+      # - '21:21' # FTP
+    environment:
+      PUID: 1000
+      PGID: 1000
+      # Uncomment this if you want to change the location of
+      # the SQLite DB file within the container
+      # DB_SQLITE_FILE: "/data/database.sqlite"
+
+      # Uncomment this if IPv6 is not enabled on your host
+      # DISABLE_IPV6: 'true'
+    volumes:
+      - /docker/nginx-proxy-manager/data:/data
+      - /docker/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+    networks:
+      - proxied-network
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+
+# simple static server
+  static-site:
+    image: nginx:alpine-slim
+    container_name: static-site
+    restart: unless-stopped
+    ports:
+      - 8000:80
+    volumes:
+      - /docker/static-site/html:/usr/share/nginx/html:ro
+    networks:
+      - proxied-network
+
+# media
+  
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - JELLYFIN_PublishedServerUrl=http://192.168.1.106 #optional
+    volumes:
+      - /docker/jellyfin:/config
+      - /media/drive/piracy/media/shows:/data/tvshows
+      - /media/drive/piracy/media/movies:/data/movies
+    ports:
+      - 8096:8096
+      # - 8920:8920 #optional
+      - 7359:7359/udp #optional
+      # - 1900:1900/udp #optional
+    restart: unless-stopped
+    networks:
+      - proxied-network
+      - cf-tunnel
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+              driver: nvidia
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+
+  # jellyseerr:
+  #   image: ghcr.io/fallenbagel/jellyseerr:latest
+  #   container_name: jellyseerr
+  #   environment:
+  #     - LOG_LEVEL=debug
+  #     - TZ=America/New_York
+  #     - PORT=5055 #optional
+  #   ports:
+  #     - 5055:5055
+  #   volumes:
+  #     - /docker/jellyseerr:/app/config
+  #   restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /docker/sonarr:/config
+      - /media/drive/piracy:/data
+    ports:
+      - 8989:8989
+    networks:
+      - proxied-network
+      - cf-tunnel
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /docker/radarr:/config
+      - /media/drive/piracy:/data
+    ports:
+      - 7878:7878
+    networks:
+      - proxied-network
+      - cf-tunnel
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /docker/prowlarr:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+    networks:
+      - proxied-network
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    cpus: 1
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - WEBUI_PORT=9080
+      - TORRENTING_PORT=28469
+    volumes:
+      - /docker/qbittorrent/config:/config
+      - /media/drive/piracy/downloads:/data/downloads
+      - /docker/qbittorrent/vuetorrent:/vuetorrent
+    ports:
+      - 9080:9080
+      - 28469:28469
+      - 28469:28469/udp
+    restart: unless-stopped
+    networks:
+      - proxied-network
+
+# cf-tunnel
+  cloudflare-tunnel-daemon:
+    image: cloudflare/cloudflared:latest
+    container_name: cf-tunnel-daemon
+    restart: unless-stopped
+    networks:
+      - cf-tunnel
+    command: ['tunnel', '--no-autoupdate', 'run', '--token', 'eyJhIjoiNWY3ZDM5MTIzYTMxNzA2NDA1YTAzZTcwNjM2YjViNmQiLCJ0IjoiMmI5MDdmZjAtYTgyMC00MjZmLWI3NjYtNDYyODAzYmYxNjc5IiwicyI6Ik9EVTNaVE16TVdRdE5tUmxOQzAwWlRoaExXSmlOakl0TlRCaFpUbGtNREJoWm1GayJ9']    
+
+# home automation
+  homeassistant:
+    image: lscr.io/linuxserver/homeassistant:latest
+    container_name: homeassistant
+    # network_mode: host
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - /docker/homeassistant:/config
+      - /var/run/dbus:/var/run/dbus:ro
+    ports:
+      - 8123:8123 # needed if network_mode != host
+    # devices:
+    #   - /dev/serial/by-id/usb-Zooz_800_Z-Wave_Stick_533D004242-if00:/dev/zwave
+    restart: unless-stopped
+    networks:
+      - home-automation
+      - proxied-network
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+
+  zwave-js-ui:
+    container_name: zwave-js-ui
+    image: zwavejs/zwave-js-ui:latest
+    restart: always
+    tty: true
+    stop_signal: SIGINT
+    environment:
+      - SESSION_SECRET=mysupersecretkey
+      # Uncomment if you want log times and dates to match your timezone instead of UTC
+      # Available at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+      - TZ=America/New_York
+    # networks:
+    #   - zwave
+    devices:
+      # Do not use /dev/ttyUSBX serial devices, as those mappings can change over time.
+      # Instead, use the /dev/serial/by-id/X serial device for your Z-Wave stick.
+      - '/dev/serial/by-id/usb-Zooz_800_Z-Wave_Stick_533D004242-if00:/dev/zwave'
+    volumes:
+      - zwave-config:/usr/src/app/store
+    # Or by using local folder
+    # - ./store:/usr/src/app/store
+    ports:
+      - '8091:8091' # port for web interface
+      - '3000:3000' # port for Z-Wave JS websocket server
+    networks:
+      - home-automation
+    labels:
+      - com.centurylinklabs.watchtower.monitor-only=true
+
+  # music-assistant-server:
+  #   image: ghcr.io/music-assistant/server:latest # <<< Desired release version here (or use beta to get the latest beta version)
+  #   container_name: music-assistant-server
+  #   restart: unless-stopped
+  #   # Network mode must be set to host for MA to work correctly
+  #   network_mode: host
+  #   volumes:
+  #     - /docker/music-assistant-server/data:/data/
+  #   # privileged caps (and security-opt) needed to mount smb folders within the container
+  #   cap_add:
+  #     - SYS_ADMIN
+  #     - DAC_READ_SEARCH
+  #   security_opt:
+  #     - apparmor:unconfined
+  #   environment:
+  #     # Provide logging level as environment variable.
+  #     # default=info, possible=(critical, error, warning, info, debug)
+  #     - LOG_LEVEL=info
+
+# meme-bot
+  meme-bot:
+    image: ropc/meme-bot:latest
+    container_name: meme-bot
+    volumes:
+      - memebot:/code
+    env_file:
+      - ./memebot-prod.env
+    restart: unless-stopped
+    environment:
+      REMINDERS_SAVE_FILE_PATH: /code/reminders.pickle
+      WHISPER_CONFIG_FILE_PATH: /code/whisper_config.json
+      OOC_CONFIG_FILE_PATH: /code/ooc_config.json
+
+  meme-bot-rust:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.rust
+    image: ropc/meme-bot-rust:latest
+    container_name: meme-bot-rust
+    env_file:
+      - ./memebot-prod.env
+    restart: unless-stopped
+
+# minecraft
+  # crafty:
+  #   container_name: crafty-container
+  #   image: registry.gitlab.com/crafty-controller/crafty-4:latest
+  #   restart: always
+  #   environment:
+  #       - TZ=America/New_York
+  #   ports:
+  #       - "8443:8443" # HTTPS
+  #       - "8123:8123" # DYNMAP
+  #       - "19132:19132/udp" # BEDROCK
+  #         #- "25500-25600:25500-25600" # MC SERV PORT RANGE
+  #       - "25565:25565" # JAVA MC DEFAULT PORT
+  #   volumes:
+  #       - /docker/crafty/backups:/crafty/backups
+  #       - /docker/crafty/logs:/crafty/logs
+  #       - /docker/crafty/servers:/crafty/servers
+  #       - /docker/crafty/config:/crafty/app/config
+  #       - /docker/crafty/import:/crafty/import
+
+# pihole
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      # DNS Ports
+      - "53:53/tcp"
+      - "53:53/udp"
+      # Default HTTP Port
+      - "8880:80/tcp"
+      # Default HTTPs Port. FTL will generate a self-signed certificate
+      - "8443:443/tcp"
+      # Uncomment the below if using Pi-hole as your DHCP Server
+      #- "67:67/udp"
+      # Uncomment the line below if you are using Pi-hole as your NTP server
+      #- "123:123/udp"
+    environment:
+      # Set the appropriate timezone for your location from
+      # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones, e.g:
+      TZ: 'America/New_York'
+      # Set a password to access the web interface. Not setting one will result in a random password being assigned
+      FTLCONF_webserver_api_password: 'correct horse battery staple'
+      # If using Docker's default `bridge` network setting the dns listening mode should be set to 'all'
+      FTLCONF_dns_listeningMode: 'all'
+    # Volumes store your data between container upgrades
+    volumes:
+      # For persisting Pi-hole's databases and common configuration file
+      - '/docker/etc-pihole:/etc/pihole'
+      # Uncomment the below if you have custom dnsmasq config files that you want to persist. Not needed for most starting fresh with Pi-hole v6. If you're upgrading from v5 you and have used this directory before, you should keep it enabled for the first v6 container start to allow for a complete migration. It can be removed afterwards. Needs environment variable FTLCONF_misc_etc_dnsmasq_d: 'true'
+      #- './etc-dnsmasq.d:/etc/dnsmasq.d'
+    cap_add:
+      # See https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+      # Required if you are using Pi-hole as your DHCP server, else not needed
+      - NET_ADMIN
+      # # Required if you are using Pi-hole as your NTP client to be able to set the host's system time
+      # - SYS_TIME
+      # Optional, if Pi-hole should get some more processing time
+      - SYS_NICE
+    restart: unless-stopped
+
+# porn
+  stash:
+    image: stashapp/stash:latest
+    container_name: stash
+    restart: unless-stopped
+    cpus: 2
+    ## the container's port must be the same with the STASH_PORT in the environment section
+    ports:
+      - "9999:9999"
+    # networks:
+    #   - local
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+              driver: nvidia
+    environment:
+      - STASH_STASH=/data/
+      - STASH_GENERATED=/generated/
+      - STASH_METADATA=/metadata/
+      - STASH_CACHE=/cache/
+      ## Adjust below to change default port (9999)
+      - STASH_PORT=9999
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      ## Keep configs, scrapers, and plugins here.
+      - /docker/stash/config:/root/.stash
+      ## Point this at your collection.
+      - /media/extdrive/porn:/data/drive
+      ## This is where your stash's metadata lives
+      - /docker/stash/metadata:/metadata
+      ## Any other cache content.
+      - /docker/stash/cache:/cache
+      ## Where to store binary blob data (scene covers, images)
+      - /docker/stash/blobs:/blobs
+      ## Where to store generated content (screenshots,previews,transcodes,sprites)
+      - /docker/stash/generated:/generated
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    devices:
+      - /dev/dri:/dev/dri
+
+  qbittorrent-porn:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent-porn
+    cpus: 0.5
+    # networks:
+    #   - local
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - WEBUI_PORT=8666
+      - TORRENTING_PORT=65124
+      # - DOCKER_MODS=ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest
+    volumes:
+      - /docker/qbittorrent/porn-config:/config
+      - /media/extdrive/porn/torrents:/downloads
+      - /docker/qbittorrent/vuetorrent:/vuetorrent
+    ports:
+      - 8666:8666
+      - 65124:65124
+      - 65124:65124/udp
+    restart: unless-stopped
+
+# watchtower
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      # - /root/.docker/config.json:/config.json
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - WATCHTOWER_SCHEDULE=0 0 4 * * *
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_ROLLING_RESTART=true
+      # - WATCHTOWER_LABEL_ENABLE=true
+      # - WATCHTOWER_RUN_ONCE=true
+
+volumes:
+  memebot:
+  zwave-config:
+    name: zwave-config
+
+networks:
+  cf-tunnel:
+    name: cf-tunnel
+    external: true
+  proxied-network:
+    name: proxied-network
+  recyclarr:
+    name: recyclarr
+    external: true
+  home-automation:
+    name: home-automation
+
