@@ -100,6 +100,7 @@ services:
     networks:
       - proxied-network
       - cf-tunnel
+      - recyclarr
     restart: unless-stopped
 
   radarr:
@@ -117,6 +118,7 @@ services:
     networks:
       - proxied-network
       - cf-tunnel
+      - recyclarr
     restart: unless-stopped
 
   prowlarr:
@@ -133,6 +135,18 @@ services:
     restart: unless-stopped
     networks:
       - proxied-network
+
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr
+    container_name: recyclarr
+    # user: 1000:1000
+    networks:
+      - recyclarr
+    volumes:
+      - ~/.config/recyclarr:/config
+    environment:
+      - TZ=America/New_York
+      - RECYCLARR_CREATE_CONFIG=true
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
@@ -429,7 +443,7 @@ networks:
     name: proxied-network
   recyclarr:
     name: recyclarr
-    external: true
+    # external: true
   home-automation:
     name: home-automation
 
