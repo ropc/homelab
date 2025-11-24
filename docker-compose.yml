@@ -1,3 +1,5 @@
+# https://raw.githubusercontent.com/compose-spec/compose-go/master/schema/compose-spec.json
+
 services:
 # reverse proxy
   npm:
@@ -28,6 +30,12 @@ services:
     labels:
       - com.centurylinklabs.watchtower.monitor-only=true
 
+  # caddy:
+  #   build:
+  #     dockerfile: ./Dockerfile.caddy
+  #   image: caddy-custom:latest
+  #   restart: unless-stopped
+
 # simple static server
   static-site:
     image: nginx:alpine-slim
@@ -50,6 +58,8 @@ services:
       - PGID=1000
       - TZ=America/New_York
       - JELLYFIN_PublishedServerUrl=http://192.168.1.106 #optional
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
     volumes:
       - /docker/jellyfin:/config
       - /media/drive/piracy/media/shows:/data/tvshows
@@ -67,8 +77,9 @@ services:
       resources:
         reservations:
           devices:
-            - capabilities: [gpu]
-              driver: nvidia
+            - driver: nvidia
+              capabilities: [gpu]
+              count: all
     labels:
       - com.centurylinklabs.watchtower.monitor-only=true
 
