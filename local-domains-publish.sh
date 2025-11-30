@@ -6,13 +6,18 @@
 
 #trap _term SIGTERM
 
-/usr/bin/avahi-publish -a oldlappy.local -R 192.168.1.122 &
-/usr/bin/avahi-publish -a jellyfin.local -R 192.168.1.122 &
-/usr/bin/avahi-publish -a jellyseerr.local -R 192.168.1.122 &
-/usr/bin/avahi-publish -a radarr.local -R 192.168.1.122 &
-/usr/bin/avahi-publish -a sonarr.local -R 192.168.1.122 &
-/usr/bin/avahi-publish -a prowlarr.local -R 192.168.1.122 &
-/usr/bin/avahi-publish -a qbittorrent.local -R 192.168.1.122 &
-/usr/bin/avahi-publish -a homeassistant.local -R 192.168.1.122 &
+HOST_IP=$(hostname -I | awk '{print $1}')
+echo "Binding to $HOST_IP"
+
+/usr/bin/avahi-publish -a oldlappy.local -R $HOST_IP &
+/usr/bin/avahi-publish -a jellyfin.local -R $HOST_IP &
+/usr/bin/avahi-publish -a jellyseerr.local -R $HOST_IP &
+/usr/bin/avahi-publish -a radarr.local -R $HOST_IP &
+/usr/bin/avahi-publish -a sonarr.local -R $HOST_IP &
+/usr/bin/avahi-publish -a bazarr.local -R $HOST_IP &
+/usr/bin/avahi-publish -a lidarr.local -R $HOST_IP &
+/usr/bin/avahi-publish -a prowlarr.local -R $HOST_IP &
+/usr/bin/avahi-publish -a qbittorrent.local -R $HOST_IP &
+/usr/bin/avahi-publish -a homeassistant.local -R $HOST_IP &
 
 while true; do sleep 10000; done
