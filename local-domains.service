@@ -5,8 +5,8 @@ After=network.target avahi-daemon.service
 [Service]
 User=ropc
 Type=simple
-WorkingDirectory=/home/ropc/docker-compose
-ExecStart=/home/ropc/docker-compose/local-domains-publish.sh
+WorkingDirectory=/home/ropc/homelab
+ExecStart=/home/ropc/homelab/local-domains-publish.sh
 Restart=no
 PrivateTmp=true
 PrivateDevices=true
