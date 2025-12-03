@@ -1,6 +1,23 @@
 # https://raw.githubusercontent.com/compose-spec/compose-go/master/schema/compose-spec.json
 
 services:
+
+# DNS Sinkhole
+  adguardhome:
+    image: 'adguard/adguardhome'
+    container_name: 'adguardhome'
+    restart: unless-stopped
+    networks:
+      - proxied-network
+    ports:
+      - 53:53/tcp # DNS
+      - 53:53/udp # DNS
+      - 9980:80  # Web UI
+      # - 3980:3000  # setup web ui
+    volumes:
+      - /docker/adguardhome/work:/opt/adguardhome/work
+      - /docker/adguardhome/conf:/opt/adguardhome/conf
+
 # reverse proxy
   npm:
     image: 'jc21/nginx-proxy-manager:latest'
