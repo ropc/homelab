@@ -159,6 +159,76 @@ services:
       - TZ=America/New_York
       - RECYCLARR_CREATE_CONFIG=true
 
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    networks:
+      - proxied-network
+    volumes:
+      - /docker/bazarr:/config
+      - /media/drive/piracy:/data
+    ports:
+      - 6767:6767
+    restart: unless-stopped
+
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    networks:
+      - proxied-network
+    volumes:
+      - /docker/lidarr:/config
+      - /media/drive/piracy:/data
+    ports:
+      - 8686:8686
+    restart: unless-stopped
+
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    user: 1000:1000 # should be owner of volumes
+    ports:
+      - "4533:4533"
+    restart: unless-stopped
+    environment:
+      # Optional: put your config options customization here. Examples:
+      # ND_LOGLEVEL: debug
+      ND_REVERSEPROXYWHITELIST: 172.22.0.0/16
+      # ND_ENABLETRANSCODINGCONFIG: true
+      ND_TRANSCODINGCACHESIZE: 300MB # default is 100MB
+    volumes:
+      - "/docker/navidrome:/data"
+      - "/media/drive/music:/music:ro"
+
+  beets-flask:
+    image: pspitzner/beets-flask:stable
+    container_name: beets-flask
+    restart: unless-stopped
+    ports:
+        - "5001:5001"
+    environment:
+        # Change to your timezone
+        TZ: "America/New_York"
+        # 502 is default on macos, 1000 on linux
+        USER_ID: 1000
+        GROUP_ID: 1000
+    volumes:
+        - /docker/beets-flask/config:/config
+        # for music folders, match paths inside and out of container!
+        - /media/drive/piracy/media/music:/media/drive/piracy/media/music:ro  # inbox/input
+        - /media/drive/music:/media/drive/music  # library
+        - /media/drive/untagged-music:/media/drive/untagged-music  # temp
+        # If you want to persist the logs, you can mount a logs directory
+        - /docker/beets-flask/logs:/logs
+
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
