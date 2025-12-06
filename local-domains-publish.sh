@@ -21,5 +21,6 @@ echo "Binding to $HOST_IP"
 /usr/bin/avahi-publish -a homeassistant.local -R $HOST_IP &
 /usr/bin/avahi-publish -a navidrome.local -R $HOST_IP &
 /usr/bin/avahi-publish -a adguardhome.local -R $HOST_IP &
+/usr/bin/avahi-publish -a crafty.local -R $HOST_IP &
 
 while true; do sleep 10000; done
