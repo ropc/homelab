@@ -80,8 +80,8 @@ services:
       - NVIDIA_DRIVER_CAPABILITIES=all
     volumes:
       - /docker/jellyfin:/config
-      - /media/drive/piracy/media/shows:/data/tvshows
-      - /media/drive/piracy/media/movies:/data/movies
+      - /media/data/piracy/media/shows:/data/tvshows
+      - /media/data/piracy/media/movies:/data/movies
     ports:
       - 8096:8096
       # - 8920:8920 #optional
@@ -123,7 +123,7 @@ services:
       - TZ=America/New_York
     volumes:
       - /docker/sonarr:/config
-      - /media/drive/piracy:/data
+      - /media/data/piracy:/data
     ports:
       - 8989:8989
     networks:
@@ -141,7 +141,7 @@ services:
       - TZ=America/New_York
     volumes:
       - /docker/radarr:/config
-      - /media/drive/piracy:/data
+      - /media/data/piracy:/data
     ports:
       - 7878:7878
     networks:
@@ -188,7 +188,7 @@ services:
       - proxied-network
     volumes:
       - /docker/bazarr:/config
-      - /media/drive/piracy:/data
+      - /media/data/piracy:/data
     ports:
       - 6767:6767
     restart: unless-stopped
@@ -204,7 +204,7 @@ services:
       - proxied-network
     volumes:
       - /docker/lidarr:/config
-      - /media/drive/piracy:/data
+      - /media/data/piracy:/data
     ports:
       - 8686:8686
     restart: unless-stopped
@@ -224,7 +224,7 @@ services:
       ND_TRANSCODINGCACHESIZE: 300MB # default is 100MB
     volumes:
       - "/docker/navidrome:/data"
-      - "/media/drive/music:/music:ro"
+      - "/media/data/music:/music:ro"
 
   beets-flask:
     image: pspitzner/beets-flask:stable
@@ -241,9 +241,9 @@ services:
     volumes:
         - /docker/beets-flask/config:/config
         # for music folders, match paths inside and out of container!
-        - /media/drive/piracy/media/music:/media/drive/piracy/media/music:ro  # inbox/input
-        - /media/drive/music:/media/drive/music  # library
-        - /media/drive/untagged-music:/media/drive/untagged-music  # temp
+        - /media/data/piracy/media/music:/media/data/piracy/media/music:ro  # inbox/input
+        - /media/data/music:/media/data/music  # library
+        - /media/data/untagged-music:/media/data/untagged-music  # temp
         # If you want to persist the logs, you can mount a logs directory
         - /docker/beets-flask/logs:/logs
 
@@ -259,7 +259,7 @@ services:
       - TORRENTING_PORT=28469
     volumes:
       - /docker/qbittorrent/config:/config
-      - /media/drive/piracy/downloads:/data/downloads
+      - /media/data/piracy/downloads:/data/downloads
       - /docker/qbittorrent/vuetorrent:/vuetorrent
     ports:
       - 9080:9080
@@ -431,7 +431,7 @@ services:
       ## Keep configs, scrapers, and plugins here.
       - /docker/stash/config:/root/.stash
       ## Point this at your collection.
-      - /media/extdrive/porn:/data/drive
+      - /media/data/porn:/data/drive
       ## This is where your stash's metadata lives
       - /docker/stash/metadata:/metadata
       ## Any other cache content.
@@ -464,7 +464,7 @@ services:
       # - DOCKER_MODS=ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest
     volumes:
       - /docker/qbittorrent/porn-config:/config
-      - /media/extdrive/porn/torrents:/downloads
+      - /media/data/porn/torrents:/downloads
       - /docker/qbittorrent/vuetorrent:/vuetorrent
     ports:
       - 8666:8666
