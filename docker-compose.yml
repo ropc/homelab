@@ -273,15 +273,6 @@ services:
       - path: /dev/sdb
         weight: 375  # default 500; lower = lower priority
 
-# cf-tunnel
-  cloudflare-tunnel-daemon:
-    image: cloudflare/cloudflared:latest
-    container_name: cf-tunnel-daemon
-    restart: unless-stopped
-    networks:
-      - cf-tunnel
-    command: ['tunnel', '--no-autoupdate', 'run', '--token', 'eyJhIjoiNWY3ZDM5MTIzYTMxNzA2NDA1YTAzZTcwNjM2YjViNmQiLCJ0IjoiMmI5MDdmZjAtYTgyMC00MjZmLWI3NjYtNDYyODAzYmYxNjc5IiwicyI6Ik9EVTNaVE16TVdRdE5tUmxOQzAwWlRoaExXSmlOakl0TlRCaFpUbGtNREJoWm1GayJ9']    
-
 # home automation
   homeassistant:
     image: lscr.io/linuxserver/homeassistant:latest
