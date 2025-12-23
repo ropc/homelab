@@ -45,8 +45,6 @@ services:
       - /docker/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
     networks:
       - proxied-network
-    labels:
-      - com.centurylinklabs.watchtower.monitor-only=true
 
   # caddy:
   #   build:
@@ -98,8 +96,6 @@ services:
             - driver: nvidia
               capabilities: [gpu]
               count: all
-    labels:
-      - com.centurylinklabs.watchtower.monitor-only=true
 
   # jellyseerr:
   #   image: ghcr.io/fallenbagel/jellyseerr:latest
@@ -297,8 +293,6 @@ services:
     networks:
       - home-automation
       - proxied-network
-    labels:
-      - com.centurylinklabs.watchtower.monitor-only=true
 
   zwave-js-ui:
     container_name: zwave-js-ui
@@ -326,8 +320,6 @@ services:
       - '3000:3000' # port for Z-Wave JS websocket server
     networks:
       - home-automation
-    labels:
-      - com.centurylinklabs.watchtower.monitor-only=true
 
   # music-assistant-server:
   #   image: ghcr.io/music-assistant/server:latest # <<< Desired release version here (or use beta to get the latest beta version)
@@ -493,8 +485,6 @@ services:
       - /docker/stash/blobs:/blobs
       ## Where to store generated content (screenshots,previews,transcodes,sprites)
       - /docker/stash/generated:/generated
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     devices:
       - /dev/dri:/dev/dri
     blkio_config:
@@ -547,21 +537,6 @@ services:
       - 22000:22000/udp
       - 21027:21027/udp
     restart: unless-stopped
-
-# watchtower
-  watchtower:
-    image: containrrr/watchtower
-    container_name: watchtower
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      # - /root/.docker/config.json:/config.json
-      - /etc/localtime:/etc/localtime:ro
-    environment:
-      - WATCHTOWER_SCHEDULE=0 0 4 * * *
-      - WATCHTOWER_CLEANUP=true
-      - WATCHTOWER_ROLLING_RESTART=true
-      # - WATCHTOWER_LABEL_ENABLE=true
-      # - WATCHTOWER_RUN_ONCE=true
 
 volumes:
   memebot:
