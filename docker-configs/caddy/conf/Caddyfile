@@ -1,3 +1,48 @@
 jellyfin.local {
     reverse_proxy jellyfin:8096
 }
+
+radarr.local {
+    reverse_proxy radarr:7878
+}
+
+sonarr.local {
+    reverse_proxy sonarr:8989
+}
+
+bazarr.local {
+    reverse_proxy bazarr:6767
+}
+
+lidarr.local {
+    reverse_proxy lidarr:8686
+}
+
+prowlarr.local {
+    reverse_proxy prowlarr:9696
+}
+
+qbittorrent.local {
+    reverse_proxy qbittorrent:9080
+}
+
+homeassistant.local {
+    reverse_proxy homeassistant:8123
+}
+
+navidrome.local {
+    reverse_proxy navidrome:4533
+}
+
+adguardhome.local {
+    reverse_proxy adguardhome:80
+}
+
+crafty.local {
+    reverse_proxy https://crafty:8443 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+

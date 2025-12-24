@@ -9,7 +9,7 @@ services:
     cpu_shares: 2048   # default is 1024; larger = higher priority
     restart: unless-stopped
     networks:
-      - proxied-network
+      - caddy
     ports:
       - 53:53/tcp # DNS
       - 53:53/udp # DNS
@@ -44,7 +44,7 @@ services:
   #     - /docker/nginx-proxy-manager/data:/data
   #     - /docker/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
   #   networks:
-  #     - proxied-network
+  #     - caddy
 
   caddy:
     image: caddy:latest
@@ -72,7 +72,7 @@ services:
     volumes:
       - /docker/static-site/html:/usr/share/nginx/html:ro
     networks:
-      - proxied-network
+      - caddy
 
 # media
   
@@ -98,7 +98,6 @@ services:
     restart: unless-stopped
     networks:
       - caddy
-      - proxied-network
       - cf-tunnel
     deploy:
       resources:
@@ -134,7 +133,7 @@ services:
     ports:
       - 8989:8989
     networks:
-      - proxied-network
+      - caddy
       - cf-tunnel
       - recyclarr
     restart: unless-stopped
@@ -152,7 +151,7 @@ services:
     ports:
       - 7878:7878
     networks:
-      - proxied-network
+      - caddy
       - cf-tunnel
       - recyclarr
     restart: unless-stopped
@@ -170,7 +169,7 @@ services:
       - 9696:9696
     restart: unless-stopped
     networks:
-      - proxied-network
+      - caddy
 
   # recyclarr:
   #   image: ghcr.io/recyclarr/recyclarr
@@ -192,7 +191,7 @@ services:
       - PGID=1000
       - TZ=America/New_York
     networks:
-      - proxied-network
+      - caddy
     volumes:
       - /docker/bazarr:/config
       - /media/data/piracy:/data
@@ -208,7 +207,7 @@ services:
       - PGID=1000
       - TZ=America/New_York
     networks:
-      - proxied-network
+      - caddy
     volumes:
       - /docker/lidarr:/config
       - /media/data/piracy:/data
@@ -223,10 +222,12 @@ services:
     ports:
       - "4533:4533"
     restart: unless-stopped
+    networks:
+      - caddy
     environment:
       # Optional: put your config options customization here. Examples:
       # ND_LOGLEVEL: debug
-      ND_REVERSEPROXYWHITELIST: 172.22.0.0/16
+      ND_REVERSEPROXYWHITELIST: 172.19.0.0/16
       # ND_ENABLETRANSCODINGCONFIG: true
       ND_TRANSCODINGCACHESIZE: 300MB # default is 100MB
     volumes:
@@ -275,7 +276,7 @@ services:
       - 28469:28469/udp
     restart: unless-stopped
     networks:
-      - proxied-network
+      - caddy
     blkio_config:
       weight_device:
       - path: /dev/sdb
@@ -303,7 +304,7 @@ services:
     restart: unless-stopped
     networks:
       - home-automation
-      - proxied-network
+      - caddy
 
   zwave-js-ui:
     container_name: zwave-js-ui
@@ -441,7 +442,7 @@ services:
     image: registry.gitlab.com/crafty-controller/crafty-4:latest
     restart: unless-stopped
     networks:
-      - proxied-network
+      - caddy
     environment:
       - TZ=America/New_York
     ports:
@@ -561,8 +562,6 @@ networks:
   cf-tunnel:
     name: cf-tunnel
     external: true
-  proxied-network:
-    name: proxied-network
   recyclarr:
     name: recyclarr
     # external: true
