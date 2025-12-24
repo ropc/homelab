@@ -1,3 +1,10 @@
+# public
+
+ropc.dev {
+    file_server {
+        root /srv  # is this necessary?
+    }
+}
 
 # local services
 

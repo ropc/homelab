@@ -43,18 +43,6 @@ services:
       - caddy_data:/data
       - caddy_config:/config
 
-# simple static server
-  # static-site:
-  #   image: nginx:alpine-slim
-  #   container_name: static-site
-  #   restart: unless-stopped
-  #   ports:
-  #     - 8000:80
-  #   volumes:
-  #     - /docker/static-site/html:/usr/share/nginx/html:ro
-  #   networks:
-  #     - caddy
-
 # media
   
   jellyfin:
