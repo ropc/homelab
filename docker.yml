@@ -1,0 +1,23 @@
+- name: setup docker
+  hosts: myhosts
+  tasks:
+    - name: copy container configs
+      ansible.builtin.copy:
+        src: ./docker-configs/
+        dest: /docker/
+
+    - name: copy caddy compose file
+      ansible.builtin.copy:
+        src: ./docker-compose.caddy.yml
+        dest: /ansible/caddy/docker-compose.yml
+
+    - name: create docker network
+      community.docker.docker_network:
+        name: caddy
+  
+    - name: create and start caddy
+      community.docker.docker_compose_v2:
+        project_src: /ansible/caddy/
+        state: present
+        wait: true
+        wait_timeout: 30

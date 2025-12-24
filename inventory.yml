@@ -1,0 +1,4 @@
+myhosts:
+  hosts:
+    oldlappy:
+      ansible_host: oldlappy.local
