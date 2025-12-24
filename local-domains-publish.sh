@@ -1,12 +1,10 @@
-#!/bin/bash
+#!/bin/zsh
 
-#function _term {
-#  pkill -P $$
-#}
-
-#trap _term SIGTERM
-
-HOST_IP=$(hostname -I | awk '{print $1}')
+HOST_IP=""
+while [[ -z "$HOST_IP" ]] do
+    sleep 1
+    HOST_IP=$(hostname -I | awk '{print $1}')
+done
 echo "Binding to $HOST_IP"
 
 /usr/bin/avahi-publish -a oldlappy.local -R $HOST_IP &
