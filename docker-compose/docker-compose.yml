@@ -20,37 +20,47 @@ services:
       - /docker/adguardhome/conf:/opt/adguardhome/conf
 
 # reverse proxy
-  npm:
-    image: 'jc21/nginx-proxy-manager:latest'
-    container_name: npm
+  # npm:
+  #   image: 'jc21/nginx-proxy-manager:latest'
+  #   container_name: npm
+  #   restart: unless-stopped
+  #   ports:
+  #     # These ports are in format <host-port>:<container-port>
+  #     - '80:80' # Public HTTP Port
+  #     - '443:443' # Public HTTPS Port
+  #     - '81:81' # Admin Web Port
+  #     # Add any other Stream port you want to expose
+  #     # - '21:21' # FTP
+  #   environment:
+  #     PUID: 1000
+  #     PGID: 1000
+  #     # Uncomment this if you want to change the location of
+  #     # the SQLite DB file within the container
+  #     # DB_SQLITE_FILE: "/data/database.sqlite"
+
+  #     # Uncomment this if IPv6 is not enabled on your host
+  #     # DISABLE_IPV6: 'true'
+  #   volumes:
+  #     - /docker/nginx-proxy-manager/data:/data
+  #     - /docker/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+  #   networks:
+  #     - proxied-network
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy
     restart: unless-stopped
     ports:
-      # These ports are in format <host-port>:<container-port>
-      - '80:80' # Public HTTP Port
-      - '443:443' # Public HTTPS Port
-      - '81:81' # Admin Web Port
-      # Add any other Stream port you want to expose
-      # - '21:21' # FTP
-    environment:
-      PUID: 1000
-      PGID: 1000
-      # Uncomment this if you want to change the location of
-      # the SQLite DB file within the container
-      # DB_SQLITE_FILE: "/data/database.sqlite"
-
-      # Uncomment this if IPv6 is not enabled on your host
-      # DISABLE_IPV6: 'true'
-    volumes:
-      - /docker/nginx-proxy-manager/data:/data
-      - /docker/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
     networks:
-      - proxied-network
-
-  # caddy:
-  #   build:
-  #     dockerfile: ./Dockerfile.caddy
-  #   image: caddy-custom:latest
-  #   restart: unless-stopped
+      - caddy
+    volumes:
+      - /docker/caddy/conf:/etc/caddy
+      - /docker/caddy/site:/srv
+      - caddy_data:/data
+      - caddy_config:/config
 
 # simple static server
   static-site:
@@ -87,6 +97,7 @@ services:
       # - 1900:1900/udp #optional
     restart: unless-stopped
     networks:
+      - caddy
       - proxied-network
       - cf-tunnel
     deploy:
@@ -161,17 +172,17 @@ services:
     networks:
       - proxied-network
 
-  recyclarr:
-    image: ghcr.io/recyclarr/recyclarr
-    container_name: recyclarr
-    # user: 1000:1000
-    networks:
-      - recyclarr
-    volumes:
-      - ~/.config/recyclarr:/config
-    environment:
-      - TZ=America/New_York
-      - RECYCLARR_CREATE_CONFIG=true
+  # recyclarr:
+  #   image: ghcr.io/recyclarr/recyclarr
+  #   container_name: recyclarr
+  #   # user: 1000:1000
+  #   networks:
+  #     - recyclarr
+  #   volumes:
+  #     - ~/.config/recyclarr:/config
+  #   environment:
+  #     - TZ=America/New_York
+  #     - RECYCLARR_CREATE_CONFIG=true
 
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
@@ -542,6 +553,9 @@ volumes:
   memebot:
   zwave-config:
     name: zwave-config
+    external: true
+  caddy_data:
+  caddy_config:
 
 networks:
   cf-tunnel:
@@ -554,4 +568,7 @@ networks:
     # external: true
   home-automation:
     name: home-automation
+  caddy:
+    name: caddy
+    external: true
 

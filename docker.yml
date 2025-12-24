@@ -6,18 +6,18 @@
         src: ./docker-configs/
         dest: /docker/
 
-    - name: copy caddy compose file
+    - name: copy docker compose
       ansible.builtin.copy:
-        src: ./docker-compose.caddy.yml
-        dest: /ansible/caddy/docker-compose.yml
+        src: ./docker-compose/
+        dest: /ansible/docker-compose/
 
     - name: create docker network
       community.docker.docker_network:
         name: caddy
   
-    - name: create and start caddy
+    - name: create and start containers
       community.docker.docker_compose_v2:
-        project_src: /ansible/caddy/
+        project_src: /ansible/docker-compose/
         state: present
         wait: true
         wait_timeout: 30
