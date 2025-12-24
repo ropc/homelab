@@ -21,5 +21,8 @@ echo "Binding to $HOST_IP"
 /usr/bin/avahi-publish -a adguardhome.local -R $HOST_IP &
 /usr/bin/avahi-publish -a crafty.local -R $HOST_IP &
 # /usr/bin/avahi-publish -a immich.local -R $HOST_IP &
+/usr/bin/avahi-publish -a beets.local -R $HOST_IP &
+/usr/bin/avahi-publish -a stash.local -R $HOST_IP &
+/usr/bin/avahi-publish -a qbt-stash.local -R $HOST_IP &
 
 while true; do sleep 10000; done

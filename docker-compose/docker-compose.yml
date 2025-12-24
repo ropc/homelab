@@ -9,12 +9,13 @@ services:
     cpu_shares: 2048   # default is 1024; larger = higher priority
     restart: unless-stopped
     networks:
-      - caddy
+      - adguardhome
+    expose:
+      - 80  # Web UI
+      # - 3980:3000  # setup web ui
     ports:
       - 53:53/tcp # DNS
       - 53:53/udp # DNS
-      - 9980:80  # Web UI
-      # - 3980:3000  # setup web ui
     volumes:
       - /docker/adguardhome/work:/opt/adguardhome/work
       - /docker/adguardhome/conf:/opt/adguardhome/conf
@@ -30,7 +31,12 @@ services:
       - "443:443"
       - "443:443/udp"
     networks:
-      - caddy
+      - adguardhome
+      - media
+      - home-automation
+      - meme-bot
+      - minecraft
+      - stash
     volumes:
       - /docker/caddy/conf:/etc/caddy
       - /docker/caddy/site:/srv
@@ -38,16 +44,16 @@ services:
       - caddy_config:/config
 
 # simple static server
-  static-site:
-    image: nginx:alpine-slim
-    container_name: static-site
-    restart: unless-stopped
-    ports:
-      - 8000:80
-    volumes:
-      - /docker/static-site/html:/usr/share/nginx/html:ro
-    networks:
-      - caddy
+  # static-site:
+  #   image: nginx:alpine-slim
+  #   container_name: static-site
+  #   restart: unless-stopped
+  #   ports:
+  #     - 8000:80
+  #   volumes:
+  #     - /docker/static-site/html:/usr/share/nginx/html:ro
+  #   networks:
+  #     - caddy
 
 # media
   
@@ -58,22 +64,21 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=America/New_York
-      - JELLYFIN_PublishedServerUrl=http://192.168.1.106 #optional
+      # - JELLYFIN_PublishedServerUrl=http:/jellyfin.local # autodiscovery response domain or IP address
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
     volumes:
       - /docker/jellyfin:/config
       - /media/data/piracy/media/shows:/data/tvshows
       - /media/data/piracy/media/movies:/data/movies
-    ports:
-      - 8096:8096
-      # - 8920:8920 #optional
-      - 7359:7359/udp #optional
+    expose:
+      - 8096  # web ui http
+      # - 8920:8920 # web ui https
+      # - 7359:7359/udp # client discovery
       # - 1900:1900/udp #optional
     restart: unless-stopped
     networks:
-      - caddy
-      - cf-tunnel
+      - media
     deploy:
       resources:
         reservations:
@@ -105,12 +110,10 @@ services:
     volumes:
       - /docker/sonarr:/config
       - /media/data/piracy:/data
-    ports:
-      - 8989:8989
+    expose:
+      - 8989
     networks:
-      - caddy
-      - cf-tunnel
-      - recyclarr
+      - media
     restart: unless-stopped
 
   radarr:
@@ -123,12 +126,10 @@ services:
     volumes:
       - /docker/radarr:/config
       - /media/data/piracy:/data
-    ports:
-      - 7878:7878
+    expose:
+      - 7878
     networks:
-      - caddy
-      - cf-tunnel
-      - recyclarr
+      - media
     restart: unless-stopped
 
   prowlarr:
@@ -140,11 +141,11 @@ services:
       - TZ=America/New_York
     volumes:
       - /docker/prowlarr:/config
-    ports:
-      - 9696:9696
+    expose:
+      - 9696
     restart: unless-stopped
     networks:
-      - caddy
+      - media
 
   # recyclarr:
   #   image: ghcr.io/recyclarr/recyclarr
@@ -166,12 +167,12 @@ services:
       - PGID=1000
       - TZ=America/New_York
     networks:
-      - caddy
+      - media
     volumes:
       - /docker/bazarr:/config
       - /media/data/piracy:/data
-    ports:
-      - 6767:6767
+    expose:
+      - 6767
     restart: unless-stopped
 
   lidarr:
@@ -182,23 +183,23 @@ services:
       - PGID=1000
       - TZ=America/New_York
     networks:
-      - caddy
+      - media
     volumes:
       - /docker/lidarr:/config
       - /media/data/piracy:/data
-    ports:
-      - 8686:8686
+    expose:
+      - 8686
     restart: unless-stopped
 
   navidrome:
     image: deluan/navidrome:latest
     container_name: navidrome
     user: 1000:1000 # should be owner of volumes
-    ports:
-      - "4533:4533"
+    expose:
+      - 4533
     restart: unless-stopped
     networks:
-      - caddy
+      - media
     environment:
       # Optional: put your config options customization here. Examples:
       # ND_LOGLEVEL: debug
@@ -213,8 +214,10 @@ services:
     image: pspitzner/beets-flask:stable
     container_name: beets-flask
     restart: unless-stopped
-    ports:
-        - "5001:5001"
+    expose:
+      - 5001
+    networks:
+      - media
     environment:
         # Change to your timezone
         TZ: "America/New_York"
@@ -245,13 +248,14 @@ services:
       - /media/data/piracy/downloads:/data/downloads
       - /docker/qbittorrent/vuetorrent:/vuetorrent
       - /tmp/incomplete-torrents:/incomplete-torrents
+    expose:
+      - 9080  # web ui
     ports:
-      - 9080:9080
       - 28469:28469
       - 28469:28469/udp
     restart: unless-stopped
     networks:
-      - caddy
+      - media
     blkio_config:
       weight_device:
       - path: /dev/sdb
@@ -272,14 +276,13 @@ services:
     volumes:
       - /docker/homeassistant:/config
       - /var/run/dbus:/var/run/dbus:ro
-    ports:
-      - 8123:8123 # needed if network_mode != host
+    expose:
+      - 8123 # web ui
     # devices:
     #   - /dev/serial/by-id/usb-Zooz_800_Z-Wave_Stick_533D004242-if00:/dev/zwave
     restart: unless-stopped
     networks:
       - home-automation
-      - caddy
 
   zwave-js-ui:
     container_name: zwave-js-ui
@@ -292,8 +295,6 @@ services:
       # Uncomment if you want log times and dates to match your timezone instead of UTC
       # Available at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
       - TZ=America/New_York
-    # networks:
-    #   - zwave
     devices:
       # Do not use /dev/ttyUSBX serial devices, as those mappings can change over time.
       # Instead, use the /dev/serial/by-id/X serial device for your Z-Wave stick.
@@ -302,9 +303,9 @@ services:
       - zwave-config:/usr/src/app/store
     # Or by using local folder
     # - ./store:/usr/src/app/store
-    ports:
-      - '8091:8091' # port for web interface
-      - '3000:3000' # port for Z-Wave JS websocket server
+    expose:
+      - 8091 # port for web interface
+      - 3000 # port for Z-Wave JS websocket server
     networks:
       - home-automation
 
@@ -321,6 +322,8 @@ services:
       REMINDERS_SAVE_FILE_PATH: /code/reminders.pickle
       WHISPER_CONFIG_FILE_PATH: /code/whisper_config.json
       OOC_CONFIG_FILE_PATH: /code/ooc_config.json
+    networks:
+      - meme-bot
 
   meme-bot-rust:
     build:
@@ -331,6 +334,8 @@ services:
     env_file:
       - ./memebot-prod.env
     restart: unless-stopped
+    networks:
+      - meme-bot
 
 # minecraft
   crafty:
@@ -338,12 +343,13 @@ services:
     image: registry.gitlab.com/crafty-controller/crafty-4:latest
     restart: unless-stopped
     networks:
-      - caddy
+      - minecraft
     environment:
       - TZ=America/New_York
-    ports:
-      - "8443:8443" # HTTPS
+    expose:
+      - 8443 # HTTPS
       # - "9123:8123" # DYNMAP
+    ports:
       - "19132:19132/udp" # BEDROCK
         #- "25500-25600:25500-25600" # MC SERV PORT RANGE
       - "25565:25565" # JAVA MC DEFAULT PORT
@@ -361,10 +367,10 @@ services:
     restart: unless-stopped
     cpu_shares: 256   # default is 1024; smaller = lower priority
     ## the container's port must be the same with the STASH_PORT in the environment section
-    ports:
-      - "9999:9999"
-    # networks:
-    #   - local
+    expose:
+      - 9999
+    networks:
+      - stash
     deploy:
       resources:
         reservations:
@@ -404,8 +410,8 @@ services:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent-porn
     cpu_shares: 128   # default is 1024; smaller = lower priority
-    # networks:
-    #   - local
+    networks:
+      - stash
     environment:
       - PUID=1000
       - PGID=1000
@@ -417,8 +423,9 @@ services:
       - /docker/qbittorrent/porn-config:/config
       - /media/data/porn/torrents:/downloads
       - /docker/qbittorrent/vuetorrent:/vuetorrent
+    expose:
+      - 8666
     ports:
-      - 8666:8666
       - 65124:65124
       - 65124:65124/udp
     restart: unless-stopped
@@ -431,7 +438,7 @@ services:
   syncthing:
     image: lscr.io/linuxserver/syncthing:latest
     container_name: syncthing
-    hostname: syncthing #optional
+    # hostname: syncthing #optional
     environment:
       - PUID=1000
       - PGID=1000
@@ -439,8 +446,11 @@ services:
     volumes:
       - /docker/syncthing/config:/config
       - /media/data/personal:/data
+    networks:
+      - syncthing
+    expose:
+      - 8384  # web ui
     ports:
-      - 8384:8384
       - 22000:22000/tcp
       - 22000:22000/udp
       - 21027:21027/udp
@@ -455,15 +465,23 @@ volumes:
   caddy_config:
 
 networks:
-  cf-tunnel:
-    name: cf-tunnel
-    external: true
   recyclarr:
     name: recyclarr
     # external: true
+
+  # network groups, keeps containers isolated to their own groups
+  # caddy also joins all of these in order to be able to serve through reverse proxy
+  adguardhome:
+    name: adguardhome
   home-automation:
     name: home-automation
-  caddy:
-    name: caddy
-    external: true
-
+  media:
+    name: media
+  meme-bot:
+    name: meme-bot
+  minecraft:
+    name: minecraft
+  stash:
+    name: stash
+  syncthing:
+    name: syncthing
