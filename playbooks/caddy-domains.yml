@@ -1,0 +1,52 @@
+---
+- name: setup domains on homelab
+  hosts: myhosts
+  tasks:
+
+    - name: update caddyfile on hosts
+      ansible.builtin.copy:
+        src: ./docker-configs/caddy/conf/Caddyfile
+        dest: /docker/caddy/conf/Caddyfile
+        mode: "0664"
+
+    - name: reload caddyfile
+      # docker compose exec -w /etc/caddy caddy caddy reload
+      community.docker.docker_compose_v2_exec:
+        project_src: /ansible/docker-compose/
+        service: caddy
+        chdir: /etc/caddy
+        command: caddy reload
+
+    - name: read caddyfile to json
+      # /bin/sh -c "caddy adapt --config /etc/caddy/Caddyfile 2>/dev/null"
+      community.docker.docker_compose_v2_exec:
+        project_src: /ansible/docker-compose/
+        service: caddy
+        chdir: /etc/caddy
+        command: caddy adapt
+      register: result
+
+    - name: parse home domains from caddy json config
+      vars:
+        json_query: "apps.http.servers.*.routes[].match[].host[?ends_with(@, '.home')][]"
+      ansible.builtin.set_fact:
+        caddy_home_domains: "{{ result.stdout | ansible.builtin.from_json | community.general.json_query(json_query) }}"
+
+    - name: stop adguard home
+      community.docker.docker_compose_v2:
+        project_src: /ansible/docker-compose/
+        services: ["adguardhome"]
+        state: stopped
+
+    - name: update config
+      become: true
+      ansible.builtin.template:
+        src: templates/AdGuardHome.j2
+        dest: /docker/adguardhome/conf/AdGuardHome.yml
+        mode: "0600"
+
+    - name: start adguard again
+      community.docker.docker_compose_v2:
+        project_src: /ansible/docker-compose/
+        services: ["adguardhome"]
+        state: present
