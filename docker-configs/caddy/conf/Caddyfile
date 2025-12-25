@@ -2,7 +2,7 @@
 
 ropc.dev {
     file_server {
-        root /srv  # is this necessary?
+        root /srv # is this necessary?
     }
 }
 
