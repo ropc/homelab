@@ -1,4 +1,5 @@
+---
 myhosts:
   hosts:
     oldlappy:
-      ansible_host: oldlappy.local
+      ansible_host: 192.168.50.244
