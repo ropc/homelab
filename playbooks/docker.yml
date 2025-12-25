@@ -1,3 +1,4 @@
+---
 - name: setup docker
   hosts: myhosts
   tasks:
@@ -5,16 +6,18 @@
       ansible.builtin.copy:
         src: ./docker-configs/
         dest: /docker/
+        mode: "0664"
 
     - name: copy docker compose
       ansible.builtin.copy:
         src: ./docker-compose/
         dest: /ansible/docker-compose/
+        mode: "0644"
 
     - name: create docker network
       community.docker.docker_network:
         name: caddy
-  
+
     - name: create and start containers
       community.docker.docker_compose_v2:
         project_src: /ansible/docker-compose/
