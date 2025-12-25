@@ -1,0 +1,8 @@
+{
+    "ansible.python.interpreterPath": "/Users/ropc/.local/pipx/venvs/ansible/bin/python",
+    "files.associations": {
+        "*-playbook.yml": "ansible",
+        "inventory.yml": "ansible",
+        "playbooks/*.yml": "ansible"
+    }
+}

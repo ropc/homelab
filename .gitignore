@@ -76,4 +76,4 @@ Cargo.lock
 
 *.env
 !.env
-
+.ansible
