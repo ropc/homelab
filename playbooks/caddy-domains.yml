@@ -1,8 +1,8 @@
 ---
-- name: setup domains on homelab
+- name: update caddyfile
   hosts: myhosts
+  tags: ["update"]
   tasks:
-
     - name: update caddyfile on hosts
       ansible.builtin.copy:
         src: ../docker-configs/caddy/conf/Caddyfile
@@ -22,6 +22,9 @@
         chdir: /etc/caddy
         command: caddy reload
 
+- name: setup DNS based on caddyfile hosts
+  hosts: myhosts
+  tasks:
     - name: read caddyfile to json
       # /bin/sh -c "caddy adapt --config /etc/caddy/Caddyfile 2>/dev/null"
       community.docker.docker_compose_v2_exec:
@@ -35,7 +38,7 @@
       vars:
         json_query: "apps.http.servers.*.routes[].match[].host[?ends_with(@, '.home')][]"
       ansible.builtin.set_fact:
-        caddy_home_domains: "{{ result.stdout | ansible.builtin.from_json | community.general.json_query(json_query) }}"
+        caddy_home_domains: "{{ result.stdout | ansible.builtin.from_json | community.general.json_query(json_query) | ansible.builtin.unique }}"
 
     - name: stop adguard home
       community.docker.docker_compose_v2:

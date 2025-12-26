@@ -1,3 +1,10 @@
+# global
+
+# {
+#     debug
+#     auto_https disable_redirects
+# }
+
 # public
 
 # ropc.dev {

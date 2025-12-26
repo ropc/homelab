@@ -59,8 +59,8 @@ services:
       - /docker/jellyfin:/config
       - /media/data/piracy/media/shows:/data/tvshows
       - /media/data/piracy/media/movies:/data/movies
-    expose:
-      - 8096  # web ui http
+    ports:  # publishing instead of exposing bc tv doesn't like caddy's cert for https
+      - "8096:8096"  # web ui http
       # - 8920:8920 # web ui https
       # - 7359:7359/udp # client discovery
       # - 1900:1900/udp #optional
