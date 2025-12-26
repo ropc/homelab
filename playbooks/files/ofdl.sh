@@ -11,12 +11,13 @@ sed -i 's/NonInteractiveModeListName = ""/NonInteractiveModeListName = "yup"/g' 
 # incremental
 sed -i 's/DownloadPostsIncrementally = false/DownloadPostsIncrementally = true/g' /docker/ofdl/config/config.conf
 
-docker run --rm --pull always -v /media/data/porn/bought/of:/data \
+docker run --rm --pull always \
+    -v /media/data/porn/bought/of:/data \
     -v /docker/ofdl/config:/config \
     -p 8080:8080 \
     git.ofdl.tools/sim0n00ps/of-dl:latest
 
-curl 'http://oldlappy.local:9999/graphql' \
+curl 'https://stash.home/graphql' \
     -X POST \
     -H 'content-type: application/json' \
     -H 'Priority: u=0' \
