@@ -4,13 +4,13 @@
   tasks:
     - name: copy container configs
       ansible.builtin.copy:
-        src: ./docker-configs/
+        src: ../docker-configs/
         dest: /docker/
         mode: "0664"
 
     - name: copy docker compose
       ansible.builtin.copy:
-        src: ./docker-compose/
+        src: ../docker-compose/
         dest: /ansible/docker-compose/
         mode: "0644"
 
