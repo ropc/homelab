@@ -1,0 +1,15 @@
+[project]
+name = "homelab"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "ropc", email = "1666878+ropc@users.noreply.github.com"},
+]
+dependencies = ["ansible>=13.1.0", "ansible-dev-tools>=25.12.0", "jmespath>=1.0.1"]
+requires-python = "==3.14.*"
+readme = "README.md"
+license = {text = "GPL-3.0-or-later"}
+
+
+[tool.pdm]
+distribution = false
