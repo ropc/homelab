@@ -5,9 +5,14 @@
 
     - name: update caddyfile on hosts
       ansible.builtin.copy:
-        src: ./docker-configs/caddy/conf/Caddyfile
+        src: ../docker-configs/caddy/conf/Caddyfile
         dest: /docker/caddy/conf/Caddyfile
         mode: "0664"
+      register: copy_result
+
+    # - name: check if changes to caddyfile were made
+    #   ansible.builtin.meta: end_play
+    #   when: not copy_result.changed
 
     - name: reload caddyfile
       # docker compose exec -w /etc/caddy caddy caddy reload
@@ -41,8 +46,8 @@
     - name: update config
       become: true
       ansible.builtin.template:
-        src: templates/AdGuardHome.j2
-        dest: /docker/adguardhome/conf/AdGuardHome.yml
+        src: ../templates/AdGuardHome.j2
+        dest: /docker/adguardhome/conf/AdGuardHome.yaml
         mode: "0600"
 
     - name: start adguard again

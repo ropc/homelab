@@ -1,69 +1,83 @@
 # public
 
-ropc.dev {
-    file_server {
-        root /srv # is this necessary?
-    }
-}
+# ropc.dev {
+# 	file_server {
+# 		root /srv # is this necessary?
+# 	}
+# }
 
 # local services
 
-jellyfin.local {
-    reverse_proxy jellyfin:8096
+jellyfin.home {
+	reverse_proxy jellyfin:8096
+    tls internal
 }
 
-radarr.local {
-    reverse_proxy radarr:7878
+radarr.home {
+	reverse_proxy radarr:7878
+    tls internal
 }
 
-sonarr.local {
-    reverse_proxy sonarr:8989
+sonarr.home {
+	reverse_proxy sonarr:8989
+    tls internal
 }
 
-bazarr.local {
-    reverse_proxy bazarr:6767
+bazarr.home {
+	reverse_proxy bazarr:6767
+    tls internal
 }
 
-lidarr.local {
-    reverse_proxy lidarr:8686
+lidarr.home {
+	reverse_proxy lidarr:8686
+    tls internal
 }
 
-prowlarr.local {
-    reverse_proxy prowlarr:9696
+prowlarr.home {
+	reverse_proxy prowlarr:9696
+    tls internal
 }
 
-qbittorrent.local {
-    reverse_proxy qbittorrent:9080
+qbittorrent.home {
+	reverse_proxy qbittorrent:9080
+    tls internal
 }
 
-homeassistant.local {
-    reverse_proxy homeassistant:8123
+homeassistant.home {
+	reverse_proxy homeassistant:8123
+    tls internal
 }
 
-navidrome.local {
-    reverse_proxy navidrome:4533
+navidrome.home {
+	reverse_proxy navidrome:4533
+    tls internal
 }
 
-beets.local {
-    reverse_proxy beets-flask:5001
+beets.home {
+	reverse_proxy beets-flask:5001
+    tls internal
 }
 
-adguardhome.local {
-    reverse_proxy adguardhome:80
+adguard.home {
+	reverse_proxy adguardhome:80
+    tls internal
 }
 
-crafty.local {
-    reverse_proxy https://crafty:8443 {
-        transport http {
-            tls_insecure_skip_verify
-        }
-    }
+crafty.home {
+    tls internal
+	reverse_proxy https://crafty:8443 {
+		transport http {
+			tls_insecure_skip_verify
+		}
+	}
 }
 
-stash.local {
-    reverse_proxy stash:9999
+stash.home {
+	reverse_proxy stash:9999
+    tls internal
 }
 
-qbt-stash.local {
-    reverse_proxy qbittorrent-porn:8666
+qbt-stash.home {
+	reverse_proxy qbittorrent-porn:8666
+    tls internal
 }

@@ -170,11 +170,15 @@ filtering:
     - domain: oldlappy.home
       answer: 192.168.50.244
       enabled: true
+
     {% for domain in caddy_home_domains %}
+
     - domain: {{ domain }}
       answer: oldlappy.home
       enabled: true
+
     {% endfor %}
+  
   safe_fs_patterns:
     - /opt/adguardhome/work/userfilters/*
   safebrowsing_cache_size: 1048576
