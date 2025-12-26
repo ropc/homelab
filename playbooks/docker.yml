@@ -2,11 +2,11 @@
 - name: setup docker
   hosts: myhosts
   tasks:
-    - name: copy container configs
+    - name: copy caddyfile
       ansible.builtin.copy:
-        src: ../docker-configs/
-        dest: /docker/
-        mode: "0664"
+        src: Caddyfile
+        dest: /docker/caddy/conf/Caddyfile
+        mode: "0644"
 
     - name: copy docker compose
       ansible.builtin.copy:
