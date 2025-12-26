@@ -1,0 +1,6 @@
+{
+  "https://www.5thsq.org/news.rss": "/docker/caddy/site/5thsq.rss",
+  "https://mitxela.com/feed": "/docker/caddy/site/mitxela.rss",
+  "https://www.transitforwardphilly.org/news.rss": "/docker/caddy/site/transitforwardphilly.rss",
+  "https://bicyclecoalition.org/feed": "/docker/caddy/site/bicyclecoalition.rss"
+}

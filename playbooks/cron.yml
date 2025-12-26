@@ -1,5 +1,5 @@
 ---
-- name: setup cron jobs
+- name: setup ofdl cron job
   hosts: myhosts
   tasks:
     - name: copy ofdl script
@@ -8,9 +8,53 @@
         dest: /ansible/ofdl.sh
         mode: "755"
 
-    - name: setup cron job
+    - name: install ofdl cron job
       ansible.builtin.cron:
         name: "ofdl"
         minute: "0"
         hour: "5"
         job: "/ansible/ofdl.sh >> /ansible/ofdl.log 2>&1"
+
+- name: setup democracy now scraper cron job
+  hosts: myhosts
+  tasks:
+    - name: checkout democracy now scraper
+      ansible.builtin.git: # noqa: latest
+        repo: git@github.com:ropc/rss-mapper.git
+        dest: /ansible/democracynow-scraper
+
+    - name: copy run script
+      ansible.builtin.copy:
+        src: democracynow-scraper.sh
+        dest: /ansible/democracynow-scraper.sh
+        mode: "0755"
+
+    - name: install democracy now rss scraper cron job
+      ansible.builtin.cron:
+        name: "democracy now scraper"
+        minute: "*/15"
+        hour: "8-13"
+        job: "/ansible/democracynow-scraper.sh >> /ansible/democracynow-scraper.log 2>&1"
+
+- name: setup reader mode scraper cron job
+  hosts: myhosts
+  tasks:
+    - name: checkout reader mode scraper
+      ansible.builtin.git: # noqa: latest
+        repo: git@github.com:ropc/rss-reader-mode.git
+        dest: /ansible/rss-reader-mode
+
+    - name: copy run script / config files
+      ansible.builtin.copy:
+        src: "{{ item.name }}"
+        dest: /ansible/
+        mode: "{{ item.mode }}"
+      loop:
+        - { name: "democracynow-scraper.sh", mode: "0755" }
+        - { name: "rss-reader-config.json", mode: "644" }
+
+    - name: install reader mode rss scraper cron job
+      ansible.builtin.cron:
+        name: "rss-reader-mode"
+        minute: "*/15"
+        job: "/ansible/rss-reader-mode.sh >> /ansible/rss-reader-mode.log 2>&1"
