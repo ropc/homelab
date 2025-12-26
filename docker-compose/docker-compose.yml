@@ -33,7 +33,7 @@ services:
     networks:
       - adguardhome
       - media
-      - home-automation
+      - homeautomation
       - meme-bot
       - minecraft
       - stash
@@ -270,7 +270,7 @@ services:
     #   - /dev/serial/by-id/usb-Zooz_800_Z-Wave_Stick_533D004242-if00:/dev/zwave
     restart: unless-stopped
     networks:
-      - home-automation
+      - homeautomation
 
   zwave-js-ui:
     container_name: zwave-js-ui
@@ -295,7 +295,7 @@ services:
       - 8091 # port for web interface
       - 3000 # port for Z-Wave JS websocket server
     networks:
-      - home-automation
+      - homeautomation
 
 # meme-bot
   meme-bot:
@@ -461,8 +461,8 @@ networks:
   # caddy also joins all of these in order to be able to serve through reverse proxy
   adguardhome:
     name: adguardhome
-  home-automation:
-    name: home-automation
+  homeautomation:
+    name: homeautomation
   media:
     name: media
   meme-bot:

@@ -1,7 +1,6 @@
 ---
 - name: update caddyfile
   hosts: myhosts
-  tags: ["update"]
   tasks:
     - name: update caddyfile on hosts
       ansible.builtin.copy:
@@ -22,8 +21,11 @@
         chdir: /etc/caddy
         command: caddy reload
 
-- name: setup DNS based on caddyfile hosts
+- name: setup .home domains on DNS
   hosts: myhosts
+  tags:
+    - never  # skips by default, run with `-K --tags "setup-dns"` to dns domains
+    - setup-dns
   tasks:
     - name: read caddyfile to json
       # /bin/sh -c "caddy adapt --config /etc/caddy/Caddyfile 2>/dev/null"
