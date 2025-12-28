@@ -1,6 +1,9 @@
 ---
 - name: update caddyfile
   hosts: myhosts
+  tags:
+    - setup-home-dns
+    - setup-cloudflare-dns
   tasks:
     - name: update caddyfile on hosts
       ansible.builtin.copy:
@@ -21,11 +24,12 @@
         chdir: /etc/caddy
         command: caddy reload
 
-- name: setup .home domains on DNS
+- name: read caddyfile
   hosts: myhosts
   tags:
-    - never  # skips by default, run with `-K --tags "setup-dns"` to dns domains
-    - setup-dns
+    - never
+    - setup-home-dns
+    - setup-cloudflare-dns
   tasks:
     - name: read caddyfile to json
       # /bin/sh -c "caddy adapt --config /etc/caddy/Caddyfile 2>/dev/null"
@@ -36,6 +40,12 @@
         command: caddy adapt
       register: result
 
+- name: setup .home domains on DNS
+  hosts: myhosts
+  tags:
+    - never  # skips by default, run with `-K --tags "setup-home-dns"` to dns domains
+    - setup-home-dns
+  tasks:
     - name: parse home domains from caddy json config
       vars:
         json_query: "apps.http.servers.*.routes[].match[].host[?ends_with(@, '.home')][]"
@@ -60,3 +70,62 @@
         project_src: /ansible/docker-compose/
         services: ["adguardhome"]
         state: present
+
+- name: setup ropc.dev domains on Cloudflare
+  hosts: myhosts
+  tags:
+    - never
+    - setup-cloudflare-dns
+  tasks:
+    - name: parse ropc.dev domains from caddy json config
+      vars:
+        json_query: "apps.http.servers.*.routes[].match[].host[?ends_with(@, 'ropc.dev')][]"
+      ansible.builtin.set_fact:
+        caddy_public_domains: "{{ result.stdout | ansible.builtin.from_json | community.general.json_query(json_query) | ansible.builtin.unique }}"
+
+    - name: get public ip
+      community.general.ipify_facts:  # stores in ipify_public_ip
+
+    - name: print
+      ansible.builtin.debug:
+        msg: "{{ caddy_public_domains }} {{ ipify_public_ip }}"
+
+    - name: push domains to cloudflare
+      vars:
+        cloudflare_api_key: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66323239393863373933366566646332343532613335643064633163633231333562386662363633
+          3564373630383335303263343333643535383865326337330a373732376664383663626133376166
+          34373233666361333865363764643866613032376637616262653863333130366131396363636566
+          3830303534313265650a386464373936333139353933353466663230346331643637323662396464
+          30386438623136333332326636333231666531653733383561356464323437633132383665653061
+          6233393439616562366136306164633230366231393236356230
+      community.general.cloudflare_dns:
+        zone: ropc.dev
+        record: "{{ item }}"
+        type: A
+        value: "{{ ipify_public_ip }}"
+        proxied: true
+        api_token: "{{ cloudflare_api_key }}"
+      loop: "{{ caddy_public_domains }}"
+
+# - name: allow incoming connections from cloudflare ips
+#   hosts: myhosts
+#   tags:
+#     - never
+#     - setup-cloudflare-dns
+#     - jellyfin ip update
+#   tasks:
+#     - name: fetch cloudflare ips
+#       ansible.builtin.uri:
+#         url: https://api.cloudflare.com/client/v4/ips
+#       register: result
+    
+#     - name: get cloudflare ips
+#       # vars:
+#       #   json_query: "result.ipv4_cidrs"
+#       ansible.builtin.set_fact:
+#         cloudflare_ips: "{{ result.content | ansible.builtin.from_json | community.general.json_query('result.ipv4_cidrs') }}"
+
+#     # - name: update jellyfin proxies
+#     #   ansible.builtin.
