@@ -1,5 +1,5 @@
 ---
-- name: setup docker
+- name: setup configs
   hosts: myhosts
   tasks:
     - name: copy caddyfile
@@ -8,6 +8,9 @@
         dest: /docker/caddy/conf/Caddyfile
         mode: "0644"
 
+- name: setup containers
+  hosts: myhosts
+  tasks:
     - name: copy docker compose
       ansible.builtin.copy:
         src: ../docker-compose/
