@@ -8,12 +8,22 @@
 # public
 
 ropc.dev {
-	file_server {
-		root /srv # is this necessary?
-	}
+	root /srv # is this necessary?
+	file_server
 	# use self signed cert. externally this should only be accessed from cloudflare, which will accept
 	# this cert and provide its own (valid) cert when serving through cloudflare
 	tls internal
+
+	# caching settings
+
+	# agressively cache compressed assests
+    @assets path *.png *.jpg *.jpeg *.svg *.mp4 *.m4a *.mp3 *.aac
+    header @assets Cache-Control "public, max-age=31536000, immutable"
+
+    # For RSS, these are generated every 15 min, max age set accordingly
+    @rss path *.rss
+    header @rss Cache-Control "public, max-age=900, must-revalidate, proxy-revalidate"
+	encode @rss
 }
 
 # local services
