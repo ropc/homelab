@@ -33,6 +33,7 @@ services:
       - "443:443/udp"
     networks:
       - adguardhome
+      - immich
       - media
       - homeautomation
       - meme-bot
@@ -462,6 +463,9 @@ networks:
   # caddy also joins all of these in order to be able to serve through reverse proxy
   adguardhome:
     name: adguardhome
+  immich:
+    name: immich
+    external: true
   homeautomation:
     name: homeautomation
   media:

@@ -5,16 +5,23 @@
     - setup-home-dns
     - setup-cloudflare-dns
   tasks:
-    - name: update caddyfile on hosts
+    - name: update caddy related files on host
       ansible.builtin.copy:
-        src: Caddyfile
-        dest: /docker/caddy/conf/Caddyfile
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
         mode: "0664"
-      register: copy_result
+      loop:
+        - { src: "Caddyfile", dest: "/docker/caddy/conf/Caddyfile"}
+        - { src: "docker-compose.yml", dest: "/ansible/docker-compose/docker-compose.yml"}
 
-    # - name: check if changes to caddyfile were made
-    #   ansible.builtin.meta: end_play
-    #   when: not copy_result.changed
+    - name: recreate caddy container
+      community.docker.docker_compose_v2:
+        project_src: /ansible/docker-compose/
+        services: ["caddy"]
+        state: present
+        wait: true
+        wait_timeout: 30
+      register: container
 
     - name: reload caddyfile
       # docker compose exec -w /etc/caddy caddy caddy reload
@@ -23,6 +30,7 @@
         service: caddy
         chdir: /etc/caddy
         command: caddy reload
+      when: not container.changed
 
 - name: read caddyfile
   hosts: myhosts
@@ -120,7 +128,7 @@
 #       ansible.builtin.uri:
 #         url: https://api.cloudflare.com/client/v4/ips
 #       register: result
-    
+
 #     - name: get cloudflare ips
 #       # vars:
 #       #   json_query: "result.ipv4_cidrs"

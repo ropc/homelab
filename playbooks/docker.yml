@@ -1,29 +1,43 @@
 ---
-- name: setup configs
+- name: setup main containers
   hosts: myhosts
   tasks:
-    - name: copy caddyfile
-      ansible.builtin.copy:
-        src: Caddyfile
-        dest: /docker/caddy/conf/Caddyfile
-        mode: "0644"
+    - name: create dirs
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      loop:
+        - /ansible/docker-compose/
+        - /ansible/immich/
 
-- name: setup containers
-  hosts: myhosts
-  tasks:
-    - name: copy docker compose
+    - name: copy files
       ansible.builtin.copy:
-        src: ../docker-compose/
-        dest: /ansible/docker-compose/
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
         mode: "0644"
+      loop:
+        # main containers
+        - { src: "Caddyfile", dest: "/docker/caddy/conf/Caddyfile"}
+        - { src: "docker-compose.yml", dest: "/ansible/docker-compose/docker-compose.yml"}
+        - { src: "memebot-prod.env", dest: "/ansible/docker-compose/memebot-prod.env"}
+        # immich
+        - { src: "docker-compose.immich.yml", dest: "/ansible/immich/docker-compose.yml"}
+        - { src: "immich.env", dest: "/ansible/immich/.env"}
 
-    - name: create docker network
+    - name: create docker networks
       community.docker.docker_network:
-        name: caddy
+        name: "{{ item }}"
+      loop:
+        - caddy
+        - immich
 
     - name: create and start containers
       community.docker.docker_compose_v2:
-        project_src: /ansible/docker-compose/
+        project_src: "{{ item }}"
         state: present
         wait: true
         wait_timeout: 30
+      loop:
+        - /ansible/docker-compose/
+        - /ansible/immich/

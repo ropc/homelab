@@ -18,6 +18,11 @@ ropc.dev {
 
 # local services
 
+immich.home {
+	reverse_proxy immich-server:2283
+    tls internal
+}
+
 jellyfin.home {
 	reverse_proxy jellyfin:8096
     tls internal
