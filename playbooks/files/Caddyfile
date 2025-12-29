@@ -8,101 +8,101 @@
 # public
 
 ropc.dev {
-	root /srv # is this necessary?
-	file_server
-	# use self signed cert. externally this should only be accessed from cloudflare, which will accept
-	# this cert and provide its own (valid) cert when serving through cloudflare
-	tls internal
+    root /srv # is this necessary?
+    file_server
+    # use self signed cert. externally this should only be accessed from cloudflare, which will accept
+    # this cert and provide its own (valid) cert when serving through cloudflare
+    tls internal
 
-	# caching settings
+    # caching settings
 
-	# agressively cache compressed assests
+    # agressively cache compressed assests
     @assets path *.png *.jpg *.jpeg *.svg *.mp4 *.m4a *.mp3 *.aac
     header @assets Cache-Control "public, max-age=31536000, immutable"
 
     # For RSS, these are generated every 15 min, max age set accordingly
     @rss path *.rss
     header @rss Cache-Control "public, max-age=900, must-revalidate, proxy-revalidate"
-	encode @rss
+    encode @rss
 }
 
 # local services
 
 immich.home {
-	reverse_proxy immich-server:2283
+    reverse_proxy immich-server:2283
     tls internal
 }
 
 jellyfin.home {
-	reverse_proxy jellyfin:8096
+    reverse_proxy jellyfin:8096
     tls internal
 }
 
 radarr.home {
-	reverse_proxy radarr:7878
+    reverse_proxy radarr:7878
     tls internal
 }
 
 sonarr.home {
-	reverse_proxy sonarr:8989
+    reverse_proxy sonarr:8989
     tls internal
 }
 
 bazarr.home {
-	reverse_proxy bazarr:6767
+    reverse_proxy bazarr:6767
     tls internal
 }
 
 lidarr.home {
-	reverse_proxy lidarr:8686
+    reverse_proxy lidarr:8686
     tls internal
 }
 
 prowlarr.home {
-	reverse_proxy prowlarr:9696
+    reverse_proxy prowlarr:9696
     tls internal
 }
 
 qbittorrent.home {
-	reverse_proxy qbittorrent:9080
+    reverse_proxy qbittorrent:9080
     tls internal
 }
 
 homeassistant.home {
-	reverse_proxy homeassistant:8123
+    reverse_proxy homeassistant:8123
     tls internal
 }
 
 navidrome.home {
-	reverse_proxy navidrome:4533
+    reverse_proxy navidrome:4533
     tls internal
 }
 
 beets.home {
-	reverse_proxy beets-flask:5001
+    reverse_proxy beets-flask:5001
     tls internal
 }
 
 adguard.home {
-	reverse_proxy adguardhome:80
+    reverse_proxy adguardhome:80
     tls internal
 }
 
 crafty.home {
     tls internal
-	reverse_proxy https://crafty:8443 {
-		transport http {
-			tls_insecure_skip_verify
-		}
-	}
+    reverse_proxy https://crafty:8443 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
 }
 
 stash.home {
-	reverse_proxy stash:9999
+    reverse_proxy stash:9999
     tls internal
 }
 
 qbt-stash.home {
-	reverse_proxy qbittorrent-porn:8666
+    reverse_proxy qbittorrent-porn:8666
     tls internal
 }
