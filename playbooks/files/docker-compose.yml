@@ -373,8 +373,8 @@ services:
       ## Keep configs, scrapers, and plugins here.
       - /docker/stash/config:/root/.stash
       ## Point this at your collection.
-      - /media/data/porn:/data/drive
-      - /media/data/personal/porn:/data/personal
+      - /media/data/porn:/media/data/porn
+      - /media/data/personal/porn:/media/data/personal/porn:ro
       ## This is where your stash's metadata lives
       - /docker/stash/metadata:/metadata
       ## Any other cache content.
