@@ -21,6 +21,6 @@ curl 'https://stash.home/graphql' \
     -X POST \
     -H 'content-type: application/json' \
     -H 'Priority: u=0' \
-    --data-raw $'{"operationName":"MetadataScan","variables":{"input":{"rescan":false,"scanGenerateClipPreviews":false,"scanGenerateCovers":true,"scanGenerateImagePreviews":false,"scanGeneratePhashes":false,"scanGeneratePreviews":false,"scanGenerateSprites":false,"scanGenerateThumbnails":true,"paths":["/data/drive/bought/of"]}},"query":"mutation MetadataScan($input: ScanMetadataInput\041) {\\n  metadataScan(input: $input)\\n}"}'
+    --data-raw $'{"operationName":"MetadataScan","variables":{"input":{"rescan":false,"scanGenerateClipPreviews":false,"scanGenerateCovers":true,"scanGenerateImagePreviews":false,"scanGeneratePhashes":false,"scanGeneratePreviews":false,"scanGenerateSprites":false,"scanGenerateThumbnails":true,"paths":["/media/data/porn/bought/of"]}},"query":"mutation MetadataScan($input: ScanMetadataInput\041) {\\n  metadataScan(input: $input)\\n}"}'
 
 echo  # output newline
