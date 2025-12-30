@@ -374,7 +374,7 @@ services:
       - /docker/stash/config:/root/.stash
       ## Point this at your collection.
       - /media/data/porn:/media/data/porn
-      - /media/data/personal/porn:/media/data/personal/porn:ro
+      - /media/data/personal/porn:/media/data/personal/porn
       ## This is where your stash's metadata lives
       - /docker/stash/metadata:/metadata
       ## Any other cache content.
