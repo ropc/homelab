@@ -349,17 +349,20 @@ services:
 
 # porn
   stash:
-    image: stashapp/stash:latest
+    image: ghcr.io/feederbox826/stash-s6:hwaccel
     container_name: stash
     restart: unless-stopped
     cpu_shares: 256   # default is 1024; smaller = lower priority
     ## the container's port must be the same with the STASH_PORT in the environment section
+    gpus: all
     expose:
       - 9999
     networks:
       - stash
-    gpus: all
     environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Eastern
       - STASH_STASH=/data/
       - STASH_GENERATED=/generated/
       - STASH_METADATA=/metadata/
@@ -367,7 +370,6 @@ services:
       ## Adjust below to change default port (9999)
       - STASH_PORT=9999
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       ## Keep configs, scrapers, and plugins here.
       - /docker/stash/config:/root/.stash
       ## Point this at your collection.
@@ -381,8 +383,6 @@ services:
       - /docker/stash/blobs:/blobs
       ## Where to store generated content (screenshots,previews,transcodes,sprites)
       - /docker/stash/generated:/generated
-    devices:
-      - /dev/dri:/dev/dri
     blkio_config:
       weight_device:
       - path: /dev/sdb
