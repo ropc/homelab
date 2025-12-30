@@ -13,6 +13,11 @@
       loop:
         - { src: "Caddyfile", dest: "/docker/caddy/conf/Caddyfile"}
         - { src: "docker-compose.yml", dest: "/ansible/docker-compose/docker-compose.yml"}
+      register: file_copy
+
+    - name: end play if no changes
+      ansible.builtin.meta: end_play
+      when: not file_copy.changed
 
     - name: recreate caddy container
       community.docker.docker_compose_v2:
@@ -54,12 +59,6 @@
     - never  # skips by default, run with `-K --tags "setup-home-dns"` to dns domains
     - setup-home-dns
   tasks:
-    - name: parse home domains from caddy json config
-      vars:
-        json_query: "apps.http.servers.*.routes[].match[].host[?ends_with(@, '.home')][]"
-      ansible.builtin.set_fact:
-        caddy_home_domains: "{{ result.stdout | ansible.builtin.from_json | community.general.json_query(json_query) | ansible.builtin.unique }}"
-
     - name: stop adguard home
       community.docker.docker_compose_v2:
         project_src: /ansible/docker-compose/
@@ -68,6 +67,10 @@
 
     - name: update config
       become: true
+      vars:
+        json_query: "apps.http.servers.*.routes[].match[].host[?ends_with(@, '.home')][]"
+        caddy_home_domains: "{{ result.stdout | ansible.builtin.from_json | community.general.json_query(json_query) | ansible.builtin.unique }}"
+        home_domains: "{{ [ 'media.ropc.dev' ] + caddy_home_domains }}"
       ansible.builtin.template:
         src: AdGuardHome.j2
         dest: /docker/adguardhome/conf/AdGuardHome.yaml

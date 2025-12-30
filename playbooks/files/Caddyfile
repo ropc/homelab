@@ -26,6 +26,13 @@ ropc.dev {
     encode @rss
 }
 
+media.ropc.dev {
+    reverse_proxy jellyfin:8096 {
+        flush_interval -1
+    }
+    tls internal
+}
+
 # local services
 
 immich.home {
@@ -34,7 +41,7 @@ immich.home {
 }
 
 jellyfin.home {
-    reverse_proxy jellyfin:8096
+    redir https://media.ropc.dev{uri}
     tls internal
 }
 

@@ -171,7 +171,7 @@ filtering:
       answer: 192.168.50.244
       enabled: true
 
-    {% for domain in caddy_home_domains %}
+    {% for domain in home_domains %}
 
     - domain: {{ domain }}
       answer: oldlappy.home
