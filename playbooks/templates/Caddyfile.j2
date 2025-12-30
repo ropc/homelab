@@ -1,9 +1,11 @@
 # global
 
-# {
-#     debug
-#     auto_https disable_redirects
-# }
+{
+    # debug
+    acme_dns cloudflare {
+        api_token "{{ cloudflare_api_key }}"
+    }
+}
 
 # public
 
@@ -30,7 +32,6 @@ media.ropc.dev {
     reverse_proxy jellyfin:8096 {
         flush_interval -1
     }
-    tls internal
 }
 
 # local services

@@ -23,7 +23,10 @@ services:
 # reverse proxy
 
   caddy:
-    image: caddy:latest
+    # image: caddy:latest
+    build:
+      labels: ["custom-caddy:latest"]
+      dockerfile: Dockerfile.caddy
     container_name: caddy
     restart: unless-stopped
     expose:
@@ -61,8 +64,8 @@ services:
       - /docker/jellyfin:/config
       - /media/data/piracy/media/shows:/data/tvshows
       - /media/data/piracy/media/movies:/data/movies
-    ports:  # publishing instead of exposing bc tv doesn't like caddy's cert for https
-      - "8096:8096"  # web ui http
+    expose:
+      - "8096"  # web ui http
       # - 8920:8920 # web ui https
       # - 7359:7359/udp # client discovery
       # - 1900:1900/udp #optional

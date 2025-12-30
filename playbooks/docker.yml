@@ -18,12 +18,27 @@
         mode: "0644"
       loop:
         # main containers
-        - { src: "Caddyfile", dest: "/docker/caddy/conf/Caddyfile"}
+        - { src: "Dockerfile.caddy", dest: "/ansible/docker-compose/Dockerfile.caddy"}
         - { src: "docker-compose.yml", dest: "/ansible/docker-compose/docker-compose.yml"}
         - { src: "memebot-prod.env", dest: "/ansible/docker-compose/memebot-prod.env"}
         # immich
         - { src: "docker-compose.immich.yml", dest: "/ansible/immich/docker-compose.yml"}
         - { src: "immich.env", dest: "/ansible/immich/.env"}
+
+    - name: generate caddyfile
+      vars:
+        cloudflare_api_key: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66323239393863373933366566646332343532613335643064633163633231333562386662363633
+          3564373630383335303263343333643535383865326337330a373732376664383663626133376166
+          34373233666361333865363764643866613032376637616262653863333130366131396363636566
+          3830303534313265650a386464373936333139353933353466663230346331643637323662396464
+          30386438623136333332326636333231666531653733383561356464323437633132383665653061
+          6233393439616562366136306164633230366231393236356230
+      ansible.builtin.template:
+        src: caddyfile.j2
+        dest: /docker/caddy/conf/Caddyfile
+        mode: "0644"
 
     - name: create docker networks
       community.docker.docker_network:
