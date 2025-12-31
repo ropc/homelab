@@ -43,12 +43,16 @@ photos.ropc.dev {
 # local services
 
 immich.home {
-    reverse_proxy immich-server:2283
+    reverse_proxy immich-server:2283 {
+        flush_interval -1
+    }
     tls internal
 }
 
 jellyfin.home {
-    redir https://media.ropc.dev{uri}
+    reverse_proxy jellyfin:8096 {
+        flush_interval -1
+    }
     tls internal
 }
 
