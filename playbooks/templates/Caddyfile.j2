@@ -34,10 +34,16 @@ media.ropc.dev {
     }
 }
 
+photos.ropc.dev {
+    reverse_proxy immich-server:2283 {
+        flush_interval -1
+    }
+}
+
 # local services
 
 immich.home {
-    reverse_proxy immich-server:2283
+    redir https://photos.ropc.dev{uri}
     tls internal
 }
 
