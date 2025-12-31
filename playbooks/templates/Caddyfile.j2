@@ -43,7 +43,7 @@ photos.ropc.dev {
 # local services
 
 immich.home {
-    redir https://photos.ropc.dev{uri}
+    reverse_proxy immich-server:2283
     tls internal
 }
 

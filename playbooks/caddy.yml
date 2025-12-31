@@ -90,7 +90,7 @@
         json_query: "apps.http.servers.*.routes[].match[].host[?ends_with(@, '.home')][]"
         caddy_home_domains: "{{ result.stdout | ansible.builtin.from_json | community.general.json_query(json_query) | ansible.builtin.unique }}"
         # these can probably be taken from the public domains list
-        home_domains: "{{ [ 'media.ropc.dev', 'photos.ropc.dev' ] + caddy_home_domains }}"
+        home_domains: "{{ [ 'media.ropc.dev' ] + caddy_home_domains }}"
       ansible.builtin.template:
         src: AdGuardHome.j2
         dest: /docker/adguardhome/conf/AdGuardHome.yaml
