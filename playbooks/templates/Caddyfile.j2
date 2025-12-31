@@ -12,9 +12,6 @@
 ropc.dev {
     root /srv # is this necessary?
     file_server
-    # use self signed cert. externally this should only be accessed from cloudflare, which will accept
-    # this cert and provide its own (valid) cert when serving through cloudflare
-    tls internal
 
     # caching settings
 
@@ -35,6 +32,12 @@ media.ropc.dev {
 }
 
 photos.ropc.dev {
+    @auth {
+        path /api/auth/* /api/users/* /api/admin/*
+    }
+    # use vpn, this is only for sharing
+    respond @auth 403
+
     reverse_proxy immich-server:2283 {
         flush_interval -1
     }
