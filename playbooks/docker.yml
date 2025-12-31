@@ -18,12 +18,14 @@
         mode: "0644"
       loop:
         # main containers
-        - { src: "Dockerfile.caddy", dest: "/ansible/docker-compose/Dockerfile.caddy"}
-        - { src: "docker-compose.yml", dest: "/ansible/docker-compose/docker-compose.yml"}
-        - { src: "memebot-prod.env", dest: "/ansible/docker-compose/memebot-prod.env"}
+        - { src: "Dockerfile.caddy", dest: "/ansible/docker-compose/Dockerfile.caddy" }
+        - { src: "docker-compose.yml", dest: "/ansible/docker-compose/docker-compose.yml" }
+        - { src: "memebot-prod.env", dest: "/ansible/docker-compose/memebot-prod.env" }
         # immich
-        - { src: "docker-compose.immich.yml", dest: "/ansible/immich/docker-compose.yml"}
-        - { src: "immich.env", dest: "/ansible/immich/.env"}
+        - { src: "docker-compose.immich.yml", dest: "/ansible/immich/docker-compose.yml" }
+        - { src: "hwaccel.transcoding.yml", dest: "/ansible/immich/hwaccel.transcoding.yml" }
+        - { src: "hwaccel.ml.yml", dest: "/ansible/immich/hwaccel.ml.yml" }
+        - { src: "immich.env", dest: "/ansible/immich/.env" }
 
     - name: generate caddyfile
       vars:
