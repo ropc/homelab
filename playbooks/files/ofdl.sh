@@ -2,12 +2,13 @@
 
 # set -x
 
-date
+echo "[start]" $(date)
 
 # update config
 
 sed -i 's/NonInteractiveMode = false/NonInteractiveMode = true/g' /docker/ofdl/config/config.conf
 sed -i 's/NonInteractiveModeListName = ""/NonInteractiveModeListName = "yup"/g' /docker/ofdl/config/config.conf
+sed -i 's/IncludeExpiredSubscriptions = false/IncludeExpiredSubscriptions = true/g' /docker/ofdl/config/config.conf
 # incremental
 sed -i 's/DownloadPostsIncrementally = false/DownloadPostsIncrementally = true/g' /docker/ofdl/config/config.conf
 
@@ -23,4 +24,4 @@ curl 'https://stash.home/graphql' \
     -H 'Priority: u=0' \
     --data-raw $'{"operationName":"MetadataScan","variables":{"input":{"rescan":false,"scanGenerateClipPreviews":false,"scanGenerateCovers":true,"scanGenerateImagePreviews":false,"scanGeneratePhashes":false,"scanGeneratePreviews":false,"scanGenerateSprites":false,"scanGenerateThumbnails":true,"paths":["/media/data/porn/bought/of"]}},"query":"mutation MetadataScan($input: ScanMetadataInput\041) {\\n  metadataScan(input: $input)\\n}"}'
 
-echo  # output newline
+echo "\n[end]" $(date)
