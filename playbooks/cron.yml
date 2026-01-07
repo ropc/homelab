@@ -12,7 +12,7 @@
       ansible.builtin.cron:
         name: "ofdl"
         minute: "0"
-        hour: "5"
+        hour: "5,12,17"
         job: "/ansible/ofdl.sh >> /ansible/ofdl.log 2>&1"
 
 - name: setup democracy now scraper cron job
