@@ -44,6 +44,7 @@ services:
     extends: # uncomment this section for hardware acceleration - see https://docs.immich.app/features/ml-hardware-acceleration
       file: hwaccel.ml.yml
       service: cuda # set to one of [armnn, cuda, rocm, openvino, openvino-wsl, rknn] for accelerated inference - use the `-wsl` version for WSL2 where applicable
+    cpu_shares: 512   # default is 1024; lower limit to not overwhelm server while this is running
     volumes:
       - model-cache:/cache
     env_file:
@@ -74,50 +75,6 @@ services:
       - ${DB_DATA_LOCATION}:/var/lib/postgresql/data
     shm_size: 128mb
     restart: always
-
-  # immich-public-proxy:
-  #   image: alangrainger/immich-public-proxy:latest
-  #   container_name: immich-public-proxy
-  #   restart: always
-  #   expose:
-  #     - "3000"
-  #   healthcheck:
-  #     test: curl -s http://immich-public-proxy:3000/share/healthcheck -o /dev/null || exit 1
-  #     start_period: 10s
-  #     timeout: 5s
-  #   environment:
-  #     PUBLIC_BASE_URL: https://photos.ropc.dev
-  #     IMMICH_URL: http://immich-server:2283
-  #     CONFIG: |
-  #       {
-  #         "ipp": {
-  #           "responseHeaders": {
-  #             "Cache-Control": "public, max-age=2592000",
-  #             "Access-Control-Allow-Origin":  "*"
-  #           },
-  #           "singleImageGallery": false,
-  #           "singleItemAutoOpen": true,
-  #           "downloadOriginalPhoto": true,
-  #           "downloadedFilename": 0,
-  #           "allowDownloadAll": 0,
-  #           "allowSlugLinks": true,
-  #           "showHomePage": true,
-  #           "showGalleryTitle": true,
-  #           "showMetadata": {
-  #             "description": false
-  #           },
-  #           "customInvalidResponse": false
-  #         },
-  #         "lightGallery": {
-  #           "controls": true,
-  #           "download": true,
-  #           "mobileSettings": {
-  #             "controls": false,
-  #             "showCloseIcon": true,
-  #             "download": true
-  #           }
-  #         }
-  #       }
 
 volumes:
   model-cache:
