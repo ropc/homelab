@@ -132,3 +132,12 @@ syncthing.home {
     reverse_proxy syncthing:8384
     tls internal
 }
+
+nextcloud.home {
+    tls internal
+    reverse_proxy https://nextcloud:443 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}

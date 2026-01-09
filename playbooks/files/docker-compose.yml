@@ -43,6 +43,7 @@ services:
       - minecraft
       - stash
       - syncthing
+      - nextcloud
     volumes:
       - /docker/caddy/conf:/etc/caddy
       - /docker/caddy/site:/srv
@@ -439,6 +440,22 @@ services:
       - 21027:21027/udp
     restart: unless-stopped
 
+  # nextcloud:
+  #   image: lscr.io/linuxserver/nextcloud:latest
+  #   container_name: nextcloud
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=US/Eastern
+  #   volumes:
+  #     - /docker/nextcloud/config:/config
+  #     - /media/data/personal/photos:/data/photos:ro
+  #   networks:
+  #     - nextcloud
+  #   expose:
+  #     - 443
+  #   restart: unless-stopped
+
 volumes:
   memebot:
   zwave-config:
@@ -471,3 +488,5 @@ networks:
     name: stash
   syncthing:
     name: syncthing
+  nextcloud:
+    name: nextcloud
