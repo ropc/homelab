@@ -1,6 +1,7 @@
 ---
 - name: setup main containers
   hosts: myhosts
+  gather_facts: false
   tasks:
     - name: create dirs
       ansible.builtin.file:
@@ -26,6 +27,9 @@
         - { src: "hwaccel.transcoding.yml", dest: "/ansible/immich/hwaccel.transcoding.yml" }
         - { src: "hwaccel.ml.yml", dest: "/ansible/immich/hwaccel.ml.yml" }
         - { src: "immich.env", dest: "/ansible/immich/.env" }
+        # homepage
+        - { src: "homepage.docker.yml", dest: "/docker/homepage/config/docker.yaml" }
+        - { src: "homepage.widgets.yml", dest: "/docker/homepage/config/widgets.yaml" }
 
     - name: generate caddyfile
       vars:

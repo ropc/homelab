@@ -87,10 +87,13 @@
     - name: update config
       become: true
       vars:
-        json_query: "apps.http.servers.*.routes[].match[].host[?ends_with(@, '.home')][]"
+        # config sets these to be a cname for oldlappy.home, so it breaks if anything is set as oldlappy.home
+        json_query: "apps.http.servers.*.routes[].match[].host[?ends_with(@, '.home')][] | [?@ != 'oldlappy.home']"
         caddy_home_domains: "{{ result.stdout | ansible.builtin.from_json | community.general.json_query(json_query) | ansible.builtin.unique }}"
         # these can probably be taken from the public domains list
         home_domains: "{{ [ 'media.ropc.dev' ] + caddy_home_domains }}"
+      # ansible.builtin.debug:
+      #   var: home_domains
       ansible.builtin.template:
         src: AdGuardHome.j2
         dest: /docker/adguardhome/conf/AdGuardHome.yaml

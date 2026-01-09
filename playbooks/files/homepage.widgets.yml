@@ -1,0 +1,15 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/info-widgets/
+
+- resources:
+  cpu: true
+  memory: true
+
+- resources:
+  disk:
+    - /
+    - /media/data
+    - /media/internal
+  cputemp: true
+  uptime: true

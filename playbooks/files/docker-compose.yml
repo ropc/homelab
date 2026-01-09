@@ -44,6 +44,7 @@ services:
       - stash
       - syncthing
       - nextcloud
+      - homepage
     volumes:
       - /docker/caddy/conf:/etc/caddy
       - /docker/caddy/site:/srv
@@ -456,6 +457,23 @@ services:
   #     - 443
   #   restart: unless-stopped
 
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    networks:
+      - homepage
+    expose:
+      - 3000
+    volumes:
+      - /docker/homepage/config:/app/config # Make sure your local config directory exists
+      - /var/run/docker.sock:/var/run/docker.sock:ro # (optional) For docker integrations
+      - /media/data:/media/data:ro
+      - /media/internal:/media/internal:ro
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: oldlappy.home # required, may need port. See gethomepage.dev/installation/#homepage_allowed_hosts
+      PUID: 1000
+      PGID: 1000
+
 volumes:
   memebot:
   zwave-config:
@@ -490,3 +508,5 @@ networks:
     name: syncthing
   nextcloud:
     name: nextcloud
+  homepage:
+    name: homepage
