@@ -508,5 +508,6 @@ networks:
     name: syncthing
   nextcloud:
     name: nextcloud
+    external: true
   homepage:
     name: homepage

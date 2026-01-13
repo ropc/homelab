@@ -1,0 +1,35 @@
+services:
+  nextcloud:
+    image: lscr.io/linuxserver/nextcloud:latest
+    container_name: nextcloud
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Eastern
+    volumes:
+      - /docker/nextcloud/config:/config
+      - /media/data/personal/nextcloud:/data
+      - /media/data/personal/photos:/photos
+      - /media/data/personal/docs:/docs
+    expose:
+      - 443
+    restart: unless-stopped
+
+  nextcloud-db:
+    image: lscr.io/linuxserver/mariadb:latest
+    container_name: nextcloud_db
+    env_file: .env
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Eastern
+    volumes:
+      - /docker/nextcloud/database:/config
+    expose:
+      - 3306
+    restart: unless-stopped
+
+networks:
+  default:
+    name: nextcloud
+    external: true

@@ -11,6 +11,7 @@
       loop:
         - /ansible/docker-compose/
         - /ansible/immich/
+        - /ansible/nextcloud/
 
     - name: copy files
       ansible.builtin.copy:
@@ -27,6 +28,9 @@
         - { src: "hwaccel.transcoding.yml", dest: "/ansible/immich/hwaccel.transcoding.yml" }
         - { src: "hwaccel.ml.yml", dest: "/ansible/immich/hwaccel.ml.yml" }
         - { src: "immich.env", dest: "/ansible/immich/.env" }
+        # nextcloud
+        - { src: "docker-compose.nextcloud.yml", dest: "/ansible/nextcloud/docker-compose.yml" }
+        - { src: "nextcloud-db.env", dest: "/ansible/nextcloud/.env" }
         # homepage
         - { src: "homepage.docker.yml", dest: "/docker/homepage/config/docker.yaml" }
         - { src: "homepage.widgets.yml", dest: "/docker/homepage/config/widgets.yaml" }
@@ -52,6 +56,7 @@
       loop:
         - caddy
         - immich
+        - nextcloud
 
     - name: create and start containers
       community.docker.docker_compose_v2:
@@ -62,3 +67,4 @@
       loop:
         - /ansible/docker-compose/
         - /ansible/immich/
+        - /ansible/nextcloud/
