@@ -31,6 +31,7 @@ services:
     restart: unless-stopped
     expose:
       - "80"
+      - "2019"
     ports:
       - "443:443"
       - "443:443/udp"
@@ -462,17 +463,19 @@ services:
     container_name: homepage
     networks:
       - homepage
+      - adguardhome
+      - immich
     expose:
       - 3000
     volumes:
       - /docker/homepage/config:/app/config # Make sure your local config directory exists
-      - /var/run/docker.sock:/var/run/docker.sock:ro # (optional) For docker integrations
+      - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
       - /media/data:/media/data:ro
       - /media/internal:/media/internal:ro
     environment:
       HOMEPAGE_ALLOWED_HOSTS: oldlappy.home # required, may need port. See gethomepage.dev/installation/#homepage_allowed_hosts
       PUID: 1000
-      PGID: 1000
+      PGID: 984
 
 volumes:
   memebot:

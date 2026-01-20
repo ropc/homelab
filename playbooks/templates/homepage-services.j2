@@ -1,0 +1,34 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/services/
+
+- Services:
+    - AdGuard Home:
+        href: https://adguard.home
+        icon: adguard-home
+        widget:
+            type: adguard
+            url: http://adguardhome
+            username: {{ adguardhome_username }}
+            password: {{ adguardhome_password }}
+    - Caddy:
+        icon: caddy
+        widget:
+            type: caddy
+            url: http://caddy:2019
+
+- Applications:
+    - Immich:
+        href: https://immich.home
+        icon: immich
+        widget:
+            type: immich
+            url: http://immich-server:2283
+            key: {{ immich_api_key }}
+            version: 2 # optional, default is 1
+    - Minecraft:
+        href: https://crafty.home
+        icon: minecraft
+        widget:
+            type: minecraft
+            url: tcp://oldlappy.home

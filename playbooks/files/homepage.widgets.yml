@@ -3,13 +3,18 @@
 # https://gethomepage.dev/configs/info-widgets/
 
 - resources:
-  cpu: true
-  memory: true
+    label: System
+    cpu: true
+    memory: true
+    cputemp: true
+    tempmin: 30 # optional, minimum cpu temp
+    tempmax: 90 # optional, maximum cpu temp
+    uptime: true
+    network: true
 
 - resources:
-  disk:
-    - /
-    - /media/data
-    - /media/internal
-  cputemp: true
-  uptime: true
+    label: Storage
+    disk:
+        - /
+        - /media/data
+        - /media/internal
