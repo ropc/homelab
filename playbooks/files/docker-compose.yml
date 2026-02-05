@@ -344,28 +344,28 @@ services:
       - meme-bot
 
 # minecraft
-  crafty:
-    container_name: crafty
-    image: registry.gitlab.com/crafty-controller/crafty-4:latest
+  minecraft:
+    image: itzg/minecraft-server:latest
     pull_policy: daily
-    restart: unless-stopped
-    networks:
-      - minecraft
-    environment:
-      - TZ=America/New_York
-    expose:
-      - 8443 # HTTPS
-      # - "9123:8123" # DYNMAP
+    container_name: minecraft
+    tty: true
+    stdin_open: true
     ports:
-      - "19132:19132/udp" # BEDROCK
-        #- "25500-25600:25500-25600" # MC SERV PORT RANGE
-      - "25565:25565" # JAVA MC DEFAULT PORT
+      - "25565:25565"
+      - "19132:19132/udp" # bedrock
+    environment:
+      EULA: "TRUE"
+      TYPE: PAPER
+      # MODPACK_PLATFORM: MODRINTH
+      MODRINTH_MODPACK: |
+        viaversion
+        geyser
+        floodgate
+        coreprotect
     volumes:
-      - /docker/crafty/backups:/crafty/backups
-      - /docker/crafty/logs:/crafty/logs
-      - /docker/crafty/servers:/crafty/servers
-      - /docker/crafty/config:/crafty/app/config
-      - /docker/crafty/import:/crafty/import
+      # attach the relative directory 'data' to the container's /data path
+      - /docker/minecraft/server0:/data
+      # - /docker/minecraft/plugins
 
 # porn
   stash:
