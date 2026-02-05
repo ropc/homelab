@@ -6,6 +6,7 @@ services:
   adguardhome:
     image: 'adguard/adguardhome'
     container_name: 'adguardhome'
+    pull_policy: daily
     cpu_shares: 2048   # default is 1024; larger = higher priority
     restart: unless-stopped
     networks:
@@ -28,6 +29,7 @@ services:
       labels: ["custom-caddy:latest"]
       dockerfile: Dockerfile.caddy
     container_name: caddy
+    pull_policy: daily
     restart: unless-stopped
     expose:
       - "80"
@@ -57,6 +59,7 @@ services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
+    pull_policy: daily
     environment:
       - PUID=1000
       - PGID=1000
@@ -94,6 +97,7 @@ services:
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
+    pull_policy: daily
     environment:
       - PUID=1000
       - PGID=1000
@@ -110,6 +114,7 @@ services:
   radarr:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
+    pull_policy: daily
     environment:
       - PUID=1000
       - PGID=1000
@@ -126,6 +131,7 @@ services:
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
+    pull_policy: daily
     environment:
       - PUID=1000
       - PGID=1000
@@ -153,6 +159,7 @@ services:
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
+    pull_policy: daily
     environment:
       - PUID=1000
       - PGID=1000
@@ -169,6 +176,7 @@ services:
   lidarr:
     image: lscr.io/linuxserver/lidarr:latest
     container_name: lidarr
+    pull_policy: daily
     environment:
       - PUID=1000
       - PGID=1000
@@ -185,6 +193,7 @@ services:
   navidrome:
     image: deluan/navidrome:latest
     container_name: navidrome
+    pull_policy: daily
     user: 1000:1000 # should be owner of volumes
     expose:
       - 4533
@@ -204,6 +213,7 @@ services:
   beets-flask:
     image: pspitzner/beets-flask:stable
     container_name: beets-flask
+    pull_policy: daily
     restart: unless-stopped
     expose:
       - 5001
@@ -227,6 +237,7 @@ services:
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
+    pull_policy: daily
     cpu_shares: 256   # default is 1024; smaller = lower priority
     environment:
       - PUID=1000
@@ -256,6 +267,7 @@ services:
   homeassistant:
     image: lscr.io/linuxserver/homeassistant:latest
     container_name: homeassistant
+    pull_policy: daily
     # network_mode: host
     environment:
       - PUID=1000
@@ -278,6 +290,7 @@ services:
   zwave-js-ui:
     container_name: zwave-js-ui
     image: zwavejs/zwave-js-ui:latest
+    pull_policy: daily
     restart: always
     tty: true
     stop_signal: SIGINT
@@ -303,6 +316,7 @@ services:
 # meme-bot
   meme-bot:
     image: ropc/meme-bot:latest
+    pull_policy: daily
     container_name: meme-bot
     volumes:
       - memebot:/code
@@ -321,6 +335,7 @@ services:
       context: .
       dockerfile: ./Dockerfile.rust
     image: ropc/meme-bot-rust:latest
+    pull_policy: daily
     container_name: meme-bot-rust
     env_file:
       - ./memebot-prod.env
@@ -332,6 +347,7 @@ services:
   crafty:
     container_name: crafty
     image: registry.gitlab.com/crafty-controller/crafty-4:latest
+    pull_policy: daily
     restart: unless-stopped
     networks:
       - minecraft
@@ -354,6 +370,7 @@ services:
 # porn
   stash:
     image: ghcr.io/feederbox826/stash-s6:hwaccel
+    pull_policy: daily
     container_name: stash
     restart: unless-stopped
     cpu_shares: 256   # default is 1024; smaller = lower priority
@@ -394,6 +411,7 @@ services:
 
   qbittorrent-porn:
     image: lscr.io/linuxserver/qbittorrent:latest
+    pull_policy: daily
     container_name: qbittorrent-porn
     cpu_shares: 128   # default is 1024; smaller = lower priority
     networks:
@@ -461,6 +479,7 @@ services:
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
+    pull_policy: daily
     networks:
       - homepage
       - adguardhome

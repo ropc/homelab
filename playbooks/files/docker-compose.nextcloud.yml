@@ -1,6 +1,7 @@
 services:
   nextcloud:
     image: lscr.io/linuxserver/nextcloud:latest
+    pull_policy: daily
     container_name: nextcloud
     environment:
       - PUID=1000
@@ -17,6 +18,7 @@ services:
 
   nextcloud-db:
     image: lscr.io/linuxserver/mariadb:latest
+    pull_policy: daily
     container_name: nextcloud_db
     env_file: .env
     environment:
