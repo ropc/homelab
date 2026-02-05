@@ -2,6 +2,8 @@
 - name: setup ofdl cron job
   hosts: myhosts
   gather_facts: false
+  tags:
+    - ofdl
   tasks:
     - name: copy ofdl script
       ansible.builtin.copy:
@@ -84,3 +86,26 @@
         user: root
         cron_file: ansible_backup
         job: "/ansible/backup.sh >> /ansible/backup.log 2>&1"
+
+# - name: setup update containers script
+#   hosts: myhosts
+#   gather_facts: false
+#   tasks:
+#     - name: copy run script
+#       ansible.builtin.copy:
+#         src: "{{ item.name }}"
+#         dest: /ansible/
+#         mode: "{{ item.mode }}"
+#       loop:
+#         - { name: "backup.sh", mode: "0755" }
+#         - { name: "backup.env", mode: "644" }
+
+#     - name: install backup cronjob
+#       become: true
+#       ansible.builtin.cron:
+#         name: "run backup (btrbk)"
+#         hour: "5"
+#         minute: "0"
+#         user: root
+#         cron_file: ansible_backup
+#         job: "/ansible/backup.sh >> /ansible/backup.log 2>&1"

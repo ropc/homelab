@@ -24,4 +24,11 @@ curl 'https://stash.home/graphql' \
     -H 'Priority: u=0' \
     --data-raw $'{"operationName":"MetadataScan","variables":{"input":{"rescan":false,"scanGenerateClipPreviews":false,"scanGenerateCovers":true,"scanGenerateImagePreviews":false,"scanGeneratePhashes":false,"scanGeneratePreviews":false,"scanGenerateSprites":false,"scanGenerateThumbnails":true,"paths":["/media/data/porn/bought/of"]}},"query":"mutation MetadataScan($input: ScanMetadataInput\041) {\\n  metadataScan(input: $input)\\n}"}'
 
+echo "waiting 30s before tagging"
+sleep 30
+
+for DIR in $(ls -d /media/data/porn/bought/of/*/); do
+    /home/ropc/.local/bin/stashtag "${DIR:t}" "${DIR}"
+done
+
 echo "\n[end]" $(date)
