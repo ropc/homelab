@@ -1,6 +1,7 @@
 #!/usr/bin/zsh
 
 # set -x
+set -e
 
 echo "[start]" $(date)
 
@@ -12,11 +13,11 @@ sed -i 's/IncludeExpiredSubscriptions = false/IncludeExpiredSubscriptions = true
 # incremental
 sed -i 's/DownloadPostsIncrementally = false/DownloadPostsIncrementally = true/g' /docker/ofdl/config/config.conf
 
-docker run --rm --pull always \
+timeout -k 1m 1h docker run --rm --pull always \
     -v /media/data/porn/bought/of:/data \
     -v /docker/ofdl/config:/config \
     -p 8080:8080 \
-    git.ofdl.tools/sim0n00ps/of-dl:latest
+    git.ofdl.tools/sim0n00ps/of-dl:latest --cli
 
 curl 'https://stash.home/graphql' \
     -X POST \
@@ -26,6 +27,8 @@ curl 'https://stash.home/graphql' \
 
 echo "waiting 30s before tagging"
 sleep 30
+
+set +e
 
 for DIR in $(ls -d /media/data/porn/bought/of/*/); do
     /home/ropc/.local/bin/stashtag "${DIR:t}" "${DIR}"
