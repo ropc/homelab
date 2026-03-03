@@ -258,10 +258,10 @@ services:
     restart: unless-stopped
     networks:
       - media
-    blkio_config:
-      weight_device:
-      - path: /dev/sdb
-        weight: 375  # default 500; lower = lower priority
+    # blkio_config:
+    #   weight_device:
+    #   - path: /dev/sdb
+    #     weight: 375  # default 500; lower = lower priority
 
 # home automation
   homeassistant:
@@ -406,10 +406,10 @@ services:
       - /docker/stash/blobs:/blobs
       ## Where to store generated content (screenshots,previews,transcodes,sprites)
       - /docker/stash/generated:/generated
-    blkio_config:
-      weight_device:
-      - path: /dev/sdb
-        weight: 250  # default 500; lower = lower priority
+    # blkio_config:
+    #   weight_device:
+    #   - path: /dev/sdb
+    #     weight: 250  # default 500; lower = lower priority
 
   qbittorrent-porn:
     image: lscr.io/linuxserver/qbittorrent:latest
@@ -435,10 +435,10 @@ services:
       - 65124:65124
       - 65124:65124/udp
     restart: unless-stopped
-    blkio_config:
-      weight_device:
-      - path: /dev/sdb
-        weight: 125  # default 500; lower = lower priority
+    # blkio_config:
+    #   weight_device:
+    #   - path: /dev/sdb
+    #     weight: 125  # default 500; lower = lower priority
 
 # syncthing
   # syncthing:

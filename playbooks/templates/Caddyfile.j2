@@ -121,7 +121,9 @@ crafty.home {
 }
 
 stash.home {
-    reverse_proxy stash:9999
+    reverse_proxy stash:9999 {
+        flush_interval -1
+    }
     tls internal
 }
 
