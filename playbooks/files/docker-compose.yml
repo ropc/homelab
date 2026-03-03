@@ -359,9 +359,11 @@ services:
       # MODPACK_PLATFORM: MODRINTH
       MODRINTH_MODPACK: |
         viaversion
-        geyser
-        floodgate
         coreprotect
+      PLUGINS: |
+        https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
+        https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/spigot
+        https://github.com/TCPShield/RealIP/releases/download/2.8.1/TCPShield-2.8.1.jar
     volumes:
       # attach the relative directory 'data' to the container's /data path
       - /docker/minecraft/server0:/data
