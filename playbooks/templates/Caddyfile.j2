@@ -96,6 +96,11 @@ homeassistant.home {
     tls internal
 }
 
+zwave.home {
+    reverse_proxy zwave-js-ui:8091
+    tls internal
+}
+
 navidrome.home {
     reverse_proxy navidrome:4533
     tls internal

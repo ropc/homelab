@@ -279,6 +279,7 @@ services:
     volumes:
       - /docker/homeassistant:/config
       - /var/run/dbus:/var/run/dbus:ro
+      # - /sys/class/bluetooth/hci0:/sys/class/bluetooth/hci0
     expose:
       - 8123 # web ui
     # devices:
@@ -299,6 +300,7 @@ services:
       # Uncomment if you want log times and dates to match your timezone instead of UTC
       # Available at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
       - TZ=America/New_York
+      - TRUST_PROXY=1
     devices:
       # Do not use /dev/ttyUSBX serial devices, as those mappings can change over time.
       # Instead, use the /dev/serial/by-id/X serial device for your Z-Wave stick.
@@ -441,43 +443,8 @@ services:
     #   - path: /dev/sdb
     #     weight: 125  # default 500; lower = lower priority
 
-# syncthing
-  # syncthing:
-  #   image: lscr.io/linuxserver/syncthing:latest
-  #   container_name: syncthing
-  #   # hostname: syncthing #optional
-  #   environment:
-  #     - PUID=1000
-  #     - PGID=1000
-  #     - TZ=Etc/UTC
-  #   volumes:
-  #     - /docker/syncthing/config:/config
-  #     - /media/data/personal:/media/data/personal
-  #   networks:
-  #     - syncthing
-  #   expose:
-  #     - 8384  # web ui
-  #   ports:
-  #     - 22000:22000/tcp
-  #     - 22000:22000/udp
-  #     - 21027:21027/udp
-  #   restart: unless-stopped
 
-  # nextcloud:
-  #   image: lscr.io/linuxserver/nextcloud:latest
-  #   container_name: nextcloud
-  #   environment:
-  #     - PUID=1000
-  #     - PGID=1000
-  #     - TZ=US/Eastern
-  #   volumes:
-  #     - /docker/nextcloud/config:/config
-  #     - /media/data/personal/photos:/data/photos:ro
-  #   networks:
-  #     - nextcloud
-  #   expose:
-  #     - 443
-  #   restart: unless-stopped
+  # homepage
 
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
