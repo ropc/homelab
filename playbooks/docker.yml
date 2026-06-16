@@ -1,4 +1,44 @@
 ---
+- name: setup minecraft
+  hosts: myhosts
+  gather_facts: false
+  tags: ["minecraft"]
+  tasks:
+    - name: copy compose file
+      ansible.builtin.copy:
+        src: "docker-compose.yml"
+        dest: "/ansible/docker-compose/docker-compose.yml"
+        mode: "0644"
+
+    - name: create and start minecraft
+      community.docker.docker_compose_v2:
+        project_src: "/ansible/docker-compose/"
+        services:
+          - minecraft
+        state: present
+        wait: true
+        wait_timeout: 60
+
+- name: setup homeassistant
+  hosts: myhosts
+  gather_facts: false
+  tags: ["homeassistant"]
+  tasks:
+    - name: copy compose file
+      ansible.builtin.copy:
+        src: "docker-compose.yml"
+        dest: "/ansible/docker-compose/docker-compose.yml"
+        mode: "0644"
+
+    - name: create and start homeassistant
+      community.docker.docker_compose_v2:
+        project_src: "/ansible/docker-compose/"
+        services:
+          - homeassistant
+        state: present
+        wait: true
+        wait_timeout: 60
+
 - name: setup main containers
   hosts: myhosts
   gather_facts: false
