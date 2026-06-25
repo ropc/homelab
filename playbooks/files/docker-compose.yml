@@ -249,7 +249,7 @@ services:
       - /docker/qbittorrent/config:/config
       - /media/data/piracy/downloads:/data/downloads
       - /docker/qbittorrent/vuetorrent:/vuetorrent
-      - /tmp/incomplete-torrents:/incomplete-torrents
+      - /incomplete-torrents:/incomplete-torrents
     expose:
       - 9080  # web ui
     ports:

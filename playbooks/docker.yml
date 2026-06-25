@@ -54,7 +54,7 @@
         - /ansible/docker-compose/
         - /ansible/immich/
         - /ansible/nextcloud/
-        - /tmp/incomplete-torrents
+        - /incomplete-torrents
 
     - name: copy files
       ansible.builtin.copy:
