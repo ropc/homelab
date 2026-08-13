@@ -2,8 +2,15 @@ http:
   pprof:
     port: 6060
     enabled: false
+  doh:
+    routes:
+      - GET /dns-query
+      - POST /dns-query
+      - GET /dns-query/{ClientID}
+      - POST /dns-query/{ClientID}
+    insecure_enabled: false
   address: 0.0.0.0:80
-  session_ttl: 720h
+  session_ttl: 30d
 users:
   - name: ro
     password: $2a$10$ATVw4wl/sht86lQRyKjjROsjdGkY9LMo6E3PrUv8AP6Yy1Nxr7mLO
@@ -16,7 +23,7 @@ dns:
   bind_hosts:
     - 0.0.0.0
   port: 53
-  anonymize_client_ip: true
+  anonymize_client_ip: false
   ratelimit: 20
   ratelimit_subnet_len_ipv4: 24
   ratelimit_subnet_len_ipv6: 56
@@ -85,7 +92,6 @@ tls:
   port_dns_over_quic: 853
   port_dnscrypt: 0
   dnscrypt_config_file: ""
-  allow_unencrypted_doh: false
   certificate_chain: ""
   private_key: ""
   certificate_path: ""
@@ -94,15 +100,17 @@ tls:
 querylog:
   dir_path: ""
   ignored: []
-  interval: 2160h
+  interval: 90d
   size_memory: 1000
   enabled: true
+  ignored_enabled: false
   file_enabled: true
 statistics:
   dir_path: ""
   ignored: []
-  interval: 24h
+  interval: 1d
   enabled: true
+  ignored_enabled: false
 filters:
   - enabled: true
     url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt
@@ -125,7 +133,9 @@ filters:
     name: HaGeZi's Threat Intelligence Feeds
     id: 1764749553
 whitelist_filters: []
-user_rules: []
+user_rules:
+  - '@@||comms-sl-events.squarespace.info^$important'
+  - ""
 dhcp:
   enabled: false
   interface_name: ""
@@ -190,7 +200,7 @@ filtering:
   filtering_enabled: true
   rewrites_enabled: true
   parental_enabled: false
-  safebrowsing_enabled: false
+  safebrowsing_enabled: true
   protection_enabled: true
 clients:
   runtime_sources:
@@ -213,4 +223,4 @@ os:
   group: ""
   user: ""
   rlimit_nofile: 0
-schema_version: 32
+schema_version: 34
