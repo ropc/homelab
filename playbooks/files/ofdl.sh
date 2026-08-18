@@ -16,7 +16,7 @@ sed -i 's/DownloadPostsIncrementally = false/DownloadPostsIncrementally = true/g
 timeout -k 1m 1h docker run --rm --pull always \
     -v /media/data/porn/bought/of:/data \
     -v /docker/ofdl/config:/config \
-    -p 8080:8080 \
+    -p 8090:8080 \
     git.ofdl.tools/sim0n00ps/of-dl:latest --cli
 
 curl 'https://stash.home/graphql' \
