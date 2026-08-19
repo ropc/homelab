@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-go/master/schema/compose-spec.json
+
+services:
+  adguardhome:
+    image: 'adguard/adguardhome'
+    container_name: 'adguardhome'
+    pull_policy: daily
+    cpu_shares: 2048   # default is 1024; larger = higher priority
+    restart: unless-stopped
+    network_mode: host
+    # networks:
+    #   - adguardhome
+    # expose:
+    #   - 80  # Web UI
+    #   # - 3980:3000  # setup web ui
+    # ports:
+    #   - 53:53/tcp # DNS
+    #   - 53:53/udp # DNS
+    volumes:
+      - /docker/adguardhome/work:/opt/adguardhome/work
+      - /docker/adguardhome/conf:/opt/adguardhome/conf

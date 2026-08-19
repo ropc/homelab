@@ -9,7 +9,7 @@ http:
       - GET /dns-query/{ClientID}
       - POST /dns-query/{ClientID}
     insecure_enabled: false
-  address: 0.0.0.0:80
+  address: 0.0.0.0:8080
   session_ttl: 30d
 users:
   - name: ro
@@ -87,7 +87,7 @@ tls:
   enabled: false
   server_name: ""
   force_https: false
-  port_https: 443
+  port_https: 8443
   port_dns_over_tls: 853
   port_dns_over_quic: 853
   port_dnscrypt: 0
