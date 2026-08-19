@@ -13,12 +13,17 @@ sed -i 's/IncludeExpiredSubscriptions = false/IncludeExpiredSubscriptions = true
 # incremental
 sed -i 's/DownloadPostsIncrementally = false/DownloadPostsIncrementally = true/g' /docker/ofdl/config/config.conf
 
-timeout -k 1m 1h docker run --rm --pull always \
+# try to pull, but don't fail if it doesn't
+docker pull git.ofdl.tools/sim0n00ps/of-dl:latest || true
+
+# run scraper
+timeout -k 1m 1h docker run --rm \
     -v /media/data/porn/bought/of:/data \
     -v /docker/ofdl/config:/config \
     -p 8090:8080 \
     git.ofdl.tools/sim0n00ps/of-dl:latest --cli
 
+# scan new files
 curl 'https://stash.home/graphql' \
     -X POST \
     -H 'content-type: application/json' \
@@ -30,6 +35,7 @@ sleep 30
 
 set +e
 
+# tag new files
 for DIR in $(ls -d /media/data/porn/bought/of/*/); do
     /home/ropc/.local/bin/stashtag "${DIR:t}" "${DIR}"
 done
