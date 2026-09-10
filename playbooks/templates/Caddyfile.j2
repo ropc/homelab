@@ -45,6 +45,12 @@ photos.ropc.dev {
     }
 }
 
+request.ropc.dev {
+    reverse_proxy seerr:5055 {
+        flush_interval -1
+    }
+}
+
 # local services
 
 immich.home {
@@ -56,6 +62,13 @@ immich.home {
 
 jellyfin.home {
     reverse_proxy jellyfin:8096 {
+        flush_interval -1
+    }
+    tls internal
+}
+
+seerr.home {
+    reverse_proxy seerr:5055 {
         flush_interval -1
     }
     tls internal

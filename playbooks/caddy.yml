@@ -47,13 +47,11 @@
         wait_timeout: 30
       register: container
 
-    - name: reload caddyfile
-      # docker compose exec -w /etc/caddy caddy caddy reload
-      community.docker.docker_compose_v2_exec:
+    - name: restart caddy
+      community.docker.docker_compose_v2:
         project_src: /ansible/docker-compose/
-        service: caddy
-        chdir: /etc/caddy
-        command: caddy reload
+        services: ["caddy"]
+        state: restarted
       when: not container.changed
 
 - name: read caddyfile
