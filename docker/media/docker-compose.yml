@@ -25,6 +25,7 @@ services:
   seerr:
     image: ghcr.io/seerr-team/seerr:latest
     init: true
+    pull_policy: daily
     container_name: seerr
     environment:
       - LOG_LEVEL=debug
