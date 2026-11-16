@@ -17,11 +17,15 @@ sed -i 's/DownloadPostsIncrementally = false/DownloadPostsIncrementally = true/g
 docker pull git.ofdl.tools/sim0n00ps/of-dl:latest || true
 
 # run scraper
-timeout -k 1m 1h docker run --rm \
+timeout -k 1m 1h docker run --rm --name=of-dl \
     -v /media/data/porn/bought/of:/data \
     -v /docker/ofdl/config:/config \
     -p 8090:8080 \
     git.ofdl.tools/sim0n00ps/of-dl:latest --cli
+# timeout -k 1m 1h docker run -it --rm --name=ofscraper \
+#   -v /docker/ofscraper/config:/home/ofscraper/.config/ofscraper/ \
+#   -v /media/data/porn/bought/of:/home/ofscraper/data \
+#   ghcr.io/datawhores/of-scraper:main ofscraper --action download --posts all --userlist "yup"
 
 # scan new files
 curl 'https://stash.home/graphql' \

@@ -363,8 +363,8 @@ services:
         # tcpshield
         # coreprotect
       PLUGINS: |
-        # https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
-        # https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/spigot
+        https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
+        https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/spigot
         https://github.com/TCPShield/RealIP/releases/download/2.8.1/TCPShield-2.8.1.jar
     volumes:
       # attach the relative directory 'data' to the container's /data path
@@ -373,13 +373,13 @@ services:
 
 # porn
   stash:
-    image: ghcr.io/feederbox826/stash-s6:hwaccel
+    image: stashapp/stash:latest
     pull_policy: daily
     container_name: stash
     restart: unless-stopped
     cpu_shares: 256   # default is 1024; smaller = lower priority
     ## the container's port must be the same with the STASH_PORT in the environment section
-    gpus: all
+    # gpus: all
     expose:
       - 9999
     networks:

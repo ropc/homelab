@@ -4,7 +4,7 @@
   gather_facts: false
   tags: ["adguard"]
   tasks:
-    - name: copy compose file
+    - name: copy adguard compose file
       ansible.builtin.copy:
         src: "docker-compose.adguard.yml"
         dest: "/ansible/docker-compose/docker-compose.adguard.yml"
@@ -82,6 +82,7 @@
 - name: setup main containers
   hosts: myhosts
   gather_facts: false
+  tags: ["main"]
   tasks:
     - name: create dirs
       ansible.builtin.file:
