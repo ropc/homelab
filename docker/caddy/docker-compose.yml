@@ -4,6 +4,8 @@ services:
     build:
       labels: ["custom-caddy:latest"]
       dockerfile: ./Dockerfile
+      network: host
+      pull: true
     container_name: caddy
     pull_policy: daily
     restart: unless-stopped
