@@ -2,9 +2,7 @@
 
 {
     # debug
-    acme_dns cloudflare {
-        api_token "{{ cloudflare_api_key }}"
-    }
+    acme_dns cloudflare {file./run/secrets/cloudflare_api_token}
     # homepage integration
     admin caddy:2019
 }

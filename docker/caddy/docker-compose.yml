@@ -29,6 +29,12 @@ services:
       - caddy_config:/config
     extra_hosts:  # Source - https://stackoverflow.com/a/43541732
       - "host.docker.internal:host-gateway"
+    secrets:
+      - cloudflare_api_token
+
+secrets:
+  cloudflare_api_token:
+    environment: "CLOUDFLARE_API_TOKEN"
 
 volumes:
   caddy_data:
