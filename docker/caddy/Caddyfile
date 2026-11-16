@@ -43,11 +43,11 @@ photos.ropc.dev {
     }
 }
 
-request.ropc.dev {
-    reverse_proxy seerr:5055 {
-        flush_interval -1
-    }
-}
+# request.ropc.dev {
+#     reverse_proxy seerr:5055 {
+#         flush_interval -1
+#     }
+# }
 
 # local services
 
@@ -58,7 +58,7 @@ immich.home {
     tls internal
 }
 
-jellyfin.home {
+jellyfin.home, oldlappy.tailb4cccd.ts.net {
     reverse_proxy jellyfin:8096 {
         flush_interval -1
     }
@@ -117,23 +117,9 @@ navidrome.home {
     tls internal
 }
 
-beets.home {
-    reverse_proxy beets-flask:5001
-    tls internal
-}
-
 adguard.home {
     reverse_proxy host.docker.internal:8080
     tls internal
-}
-
-crafty.home {
-    tls internal
-    reverse_proxy https://crafty:8443 {
-        transport http {
-            tls_insecure_skip_verify
-        }
-    }
 }
 
 stash.home {
