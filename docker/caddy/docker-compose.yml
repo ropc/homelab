@@ -1,0 +1,47 @@
+services:
+  caddy:
+    # image: caddy:latest
+    build:
+      labels: ["custom-caddy:latest"]
+      dockerfile: ./Dockerfile
+    container_name: caddy
+    pull_policy: daily
+    restart: unless-stopped
+    expose:
+      - "80"
+      - "2019"
+    ports:
+      - "443:443"
+      - "443:443/udp"
+    networks:
+      - caddy
+      - immich
+      - media
+      - homeautomation
+      - meme-bot
+      - minecraft
+    volumes:
+      - /docker/caddy/conf:/etc/caddy
+      - /docker/caddy/site:/srv
+      - caddy_data:/data
+      - caddy_config:/config
+    extra_hosts:  # Source - https://stackoverflow.com/a/43541732
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  caddy:
+    external: true
+  immich:
+    external: true
+  media:
+    external: true
+  homeautomation:
+    external: true
+  meme-bot:
+    external: true
+  minecraft:
+    external: true

@@ -247,3 +247,4 @@ Cargo.lock
 
 .ansible
 .pdm-python
+docker/stash

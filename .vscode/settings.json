@@ -4,5 +4,6 @@
         "*-playbook.yml": "ansible",
         "inventory.yml": "ansible",
         "playbooks/*.yml": "ansible"
-    }
+    },
+    "python.terminal.useEnvFile": true
 }

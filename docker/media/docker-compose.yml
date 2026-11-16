@@ -1,0 +1,203 @@
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    pull_policy: daily
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      # - JELLYFIN_PublishedServerUrl=http:/jellyfin.local # autodiscovery response domain or IP address
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility
+    volumes:
+      - /docker/jellyfin:/config
+      - /media/data/piracy/media/shows:/data/tvshows
+      - /media/data/piracy/media/movies:/data/movies
+    expose:
+      - "8096"  # web ui http
+      # - 8920:8920 # web ui https
+      # - 7359:7359/udp # client discovery
+      # - 1900:1900/udp #optional
+    restart: unless-stopped
+    gpus: all
+
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    init: true
+    container_name: seerr
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=US/Eastern
+      - PORT=5055 #optional
+    expose:
+      - 5055
+    volumes:
+      - /docker/seerr:/app/config
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/settings/public || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    pull_policy: daily
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /docker/sonarr:/config
+      - /media/data/piracy:/data
+    expose:
+      - 8989
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    pull_policy: daily
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /docker/radarr:/config
+      - /media/data/piracy:/data
+    expose:
+      - 7878
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    pull_policy: daily
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /docker/prowlarr:/config
+    expose:
+      - 9696
+    restart: unless-stopped
+
+  # recyclarr:
+  #   image: ghcr.io/recyclarr/recyclarr
+  #   container_name: recyclarr
+  #   # user: 1000:1000
+  #   networks:
+  #     - recyclarr
+  #   volumes:
+  #     - ~/.config/recyclarr:/config
+  #   environment:
+  #     - TZ=America/New_York
+  #     - RECYCLARR_CREATE_CONFIG=true
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    pull_policy: daily
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /docker/bazarr:/config
+      - /media/data/piracy:/data
+    expose:
+      - 6767
+    restart: unless-stopped
+
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    pull_policy: daily
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /docker/lidarr:/config
+      - /media/data/piracy:/data
+    expose:
+      - 8686
+    restart: unless-stopped
+
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    pull_policy: daily
+    user: 1000:1000 # should be owner of volumes
+    expose:
+      - 4533
+    restart: unless-stopped
+    environment:
+      # Optional: put your config options customization here. Examples:
+      # ND_LOGLEVEL: debug
+      ND_REVERSEPROXYWHITELIST: 172.19.0.0/16
+      # ND_ENABLETRANSCODINGCONFIG: true
+      ND_TRANSCODINGCACHESIZE: 300MB # default is 100MB
+    volumes:
+      - "/docker/navidrome:/data"
+      - "/media/data/music:/music:ro"
+
+  # beets-flask:
+  #   image: pspitzner/beets-flask:stable
+  #   container_name: beets-flask
+  #   pull_policy: daily
+  #   restart: unless-stopped
+  #   expose:
+  #     - 5001
+  #   networks:
+  #     - media
+  #   environment:
+  #       # Change to your timezone
+  #       TZ: "America/New_York"
+  #       # 502 is default on macos, 1000 on linux
+  #       USER_ID: 1000
+  #       GROUP_ID: 1000
+  #   volumes:
+  #       - /docker/beets-flask/config:/config
+  #       # for music folders, match paths inside and out of container!
+  #       - /media/data/piracy/media/music:/media/data/piracy/media/music:ro  # inbox/input
+  #       - /media/data/music:/media/data/music  # library
+  #       - /media/data/untagged-music:/media/data/untagged-music  # temp
+  #       # If you want to persist the logs, you can mount a logs directory
+  #       - /docker/beets-flask/logs:/logs
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    pull_policy: daily
+    cpu_shares: 256   # default is 1024; smaller = lower priority
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - WEBUI_PORT=9080
+      - TORRENTING_PORT=28469
+    volumes:
+      - /docker/qbittorrent/config:/config
+      - /media/data/piracy/downloads:/data/downloads
+      - /docker/qbittorrent/vuetorrent:/vuetorrent
+      - /incomplete-torrents:/incomplete-torrents
+    expose:
+      - 9080  # web ui
+    ports:
+      - 28469:28469
+      - 28469:28469/udp
+    restart: unless-stopped
+
+networks:
+  default:
+    name: media
+    external: true

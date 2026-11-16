@@ -1,0 +1,31 @@
+services:
+  minecraft:
+    image: itzg/minecraft-server:stable
+    pull_policy: daily
+    container_name: minecraft
+    tty: true
+    stdin_open: true
+    ports:
+      - "25565:25565"
+      - "19132:19132/udp" # bedrock
+    environment:
+      EULA: TRUE
+      TYPE: PAPER
+      # MODPACK_PLATFORM: MODRINTH
+      MODRINTH_PROJECTS: |
+        viaversion
+        # tcpshield
+        # coreprotect
+      PLUGINS: |
+        https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
+        https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/spigot
+        https://github.com/TCPShield/RealIP/releases/download/2.8.1/TCPShield-2.8.1.jar
+    volumes:
+      # attach the relative directory 'data' to the container's /data path
+      - /docker/minecraft/server0:/data
+      # - /docker/minecraft/plugins
+
+networks:
+  default:
+    name: minecraft
+    external: true

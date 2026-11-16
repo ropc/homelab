@@ -1,0 +1,33 @@
+services:
+  meme-bot:
+    image: ropc/meme-bot:latest
+    pull_policy: daily
+    container_name: meme-bot
+    volumes:
+      - memebot:/code
+    env_file:
+      - ./memebot-prod.env
+    restart: unless-stopped
+    environment:
+      REMINDERS_SAVE_FILE_PATH: /code/reminders.pickle
+      WHISPER_CONFIG_FILE_PATH: /code/whisper_config.json
+      OOC_CONFIG_FILE_PATH: /code/ooc_config.json
+
+  meme-bot-rust:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.rust
+    image: ropc/meme-bot-rust:latest
+    pull_policy: daily
+    container_name: meme-bot-rust
+    env_file:
+      - ./memebot-prod.env
+    restart: unless-stopped
+
+volumes:
+  memebot:
+
+networks:
+  default:
+    name: meme-bot
+    external: true

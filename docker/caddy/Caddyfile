@@ -150,11 +150,6 @@ qbt-stash.home {
     tls internal
 }
 
-{# syncthing.home {
-    reverse_proxy syncthing:8384
-    tls internal
-} #}
-
 nextcloud.home {
     tls internal
     reverse_proxy https://nextcloud:443 {
