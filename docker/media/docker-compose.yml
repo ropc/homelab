@@ -90,18 +90,6 @@ services:
       - 9696
     restart: unless-stopped
 
-  # recyclarr:
-  #   image: ghcr.io/recyclarr/recyclarr
-  #   container_name: recyclarr
-  #   # user: 1000:1000
-  #   networks:
-  #     - recyclarr
-  #   volumes:
-  #     - ~/.config/recyclarr:/config
-  #   environment:
-  #     - TZ=America/New_York
-  #     - RECYCLARR_CREATE_CONFIG=true
-
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
@@ -149,30 +137,6 @@ services:
     volumes:
       - "/docker/navidrome:/data"
       - "/media/data/music:/music:ro"
-
-  # beets-flask:
-  #   image: pspitzner/beets-flask:stable
-  #   container_name: beets-flask
-  #   pull_policy: daily
-  #   restart: unless-stopped
-  #   expose:
-  #     - 5001
-  #   networks:
-  #     - media
-  #   environment:
-  #       # Change to your timezone
-  #       TZ: "America/New_York"
-  #       # 502 is default on macos, 1000 on linux
-  #       USER_ID: 1000
-  #       GROUP_ID: 1000
-  #   volumes:
-  #       - /docker/beets-flask/config:/config
-  #       # for music folders, match paths inside and out of container!
-  #       - /media/data/piracy/media/music:/media/data/piracy/media/music:ro  # inbox/input
-  #       - /media/data/music:/media/data/music  # library
-  #       - /media/data/untagged-music:/media/data/untagged-music  # temp
-  #       # If you want to persist the logs, you can mount a logs directory
-  #       - /docker/beets-flask/logs:/logs
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
